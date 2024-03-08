@@ -20,13 +20,13 @@ def main_injection(func):
         di["FILTER_LINK"] = os.environ["FILTER_LINK"]
         di["RECRUITER"] = os.environ["RECRUITER"]
         di["AWS_REGION"] = os.environ["AWS_REGION"]
-        di["DB_TABLE_NAME"] = os.environ["AWS_REGION"]
+        di["dynamodb_table"] = os.environ["DB_TABLE_NAME"]
 
         # * Boto3 variables
-        di["boto_config"] = Config(region_name=di["aws_region"], signature_version="v4")
+        di["boto_config"] = Config(region_name=di["AWS_REGION"], signature_version="v4")
 
-        di["boto_lambda"] = __build_boto_client(
-            client_name="lambda", config=di["boto_config"]
+        di["boto_dynamodb"] = __build_boto_client(
+            client_name="dynamodb", config=di["boto_config"]
         )
 
         return func(*args, **kwargs)
