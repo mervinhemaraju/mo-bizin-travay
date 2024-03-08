@@ -1,64 +1,43 @@
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from kink import di
+from datetime import datetime
 from bs4 import BeautifulSoup
-import json
-import os
+from models.web_driver import WebDriver
+from models.opening import Opening
+from di import main_injection
+from utils.extractors import retrieve_tag_href, retrieve_tag_text
 
 
-def retrieve_tag_value(soup, filter):
-    tag = soup.select(filter)
+@main_injection
+def main(event, context):
+    # Create a web driver instance
+    web_driver = WebDriver(di["URL"], di["DELAY"])
 
-    return tag[0].text.strip() if len(tag) > 0 else "N/A"
+    # Load the opening elements
+    opening_elements = web_driver.load_elements(di["PRINCIPAL_FILTER"])
 
+    # Extract the HTML of all openings elements, parse them with BS4 and save to JSON
+    openings = []
 
-# Retrieve environment variables
-URL = os.environ["URL"]
-DELAY = os.environ["DELAY"]
-PRINCIPAL_FILTER = os.environ["PRINCIPAL_FILTER"]
-FILTERS_NAME = os.environ["FILTER_NAME"]
-FILTER_POSTED_DATE = os.environ["FILTER_POSTED_DATE"]
-RECRUITER = os.environ["RECRUITER"]
+    for opening in opening_elements:
+        # outer = position.get_attribute("outerHTML")
+        soup = BeautifulSoup(opening.get_attribute("outerHTML"), "html.parser")
+        opening_title = retrieve_tag_text(soup, di["FILTERS_NAME"])
+        opening_posted_date = retrieve_tag_text(soup, di["FILTER_POSTED_DATE"])
+        link = retrieve_tag_href(soup, di["FILTER_LINK"])
 
-# Set up Chrome WebDriver
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--headless=new")
+        openings.append(
+            Opening(
+                id=link,
+                title=opening_title,
+                posted_date=opening_posted_date,
+                recruiter=di["RECRUITER"],
+                updated_at=datetime.now().strftime("%Y-%m-%d"),
+            )
+        )
 
+    with Opening.batch_write() as batch:
+        for opening in openings:
+            batch.save(opening)
 
-chrome = webdriver.Chrome(
-    service=Service(ChromeDriverManager().install()), options=chrome_options
-)
-
-# Open the desired webpage
-chrome.get(URL)
-
-# Wait for the "openings" tag to load
-wait = WebDriverWait(chrome, DELAY)
-position_elements = wait.until(
-    EC.presence_of_all_elements_located((By.CLASS_NAME, PRINCIPAL_FILTER))
-)
-
-# Extract the HTML of all openings elements, parse them with BS4 and save to JSON
-openings = []
-
-for opening in openings:
-    # outer = position.get_attribute("outerHTML")
-    soup = BeautifulSoup(opening.get_attribute("outerHTML"), "html.parser")
-    opening_title = retrieve_tag_value(soup, FILTERS_NAME)
-    opening_posted_date = retrieve_tag_value(soup, FILTER_POSTED_DATE)
-
-    opening_info = {
-        "title": opening_title,
-        "posted_date": opening_posted_date,
-        "recruiter": RECRUITER,
-    }
-    openings.append(opening_info)
-
-with open("openings.json", "w") as json_file:
-    json.dump(openings, json_file, indent=4)
-
-# Close the WebDriver
-chrome.quit()
+    # Close the WebDriver
+    web_driver.quit()
