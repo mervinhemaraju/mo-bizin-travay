@@ -10,7 +10,7 @@ provider "aws" {
 terraform {
 
   # * Terraform version
-  required_version = ">= 1.4.5"
+  required_version = ">= 1.4.0"
 
   # * AWS Provider
   required_providers {
