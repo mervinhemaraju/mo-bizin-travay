@@ -2,7 +2,7 @@
 # * Lambda Function module
 module "openings_scraping" {
 
-  for_each = { for target in locals.all_targets : target.recruiter => target }
+  for_each = { for target in local.all_targets : target.recruiter => target }
 
   # * source module info
   source  = "terraform-aws-modules/lambda/aws"
