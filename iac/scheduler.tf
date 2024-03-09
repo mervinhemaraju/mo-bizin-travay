@@ -5,7 +5,7 @@ resource "aws_scheduler_schedule_group" "lambda_trigger" {
 
 resource "aws_scheduler_schedule" "lambda_scheduler" {
 
-  for_each = { for lambda in openings_scraping : lambda.lambda_function_arn => lambda }
+  for_each = { for lambda in module.openings_scraping : lambda.lambda_function_arn => lambda }
 
   name                = "schedule-${each.value.lambda_function_name}"
   description         = "The schedule for ${each.value.lambda_function_name}"
