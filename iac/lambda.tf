@@ -33,6 +33,18 @@ module "openings_scraping" {
   # * Publish the function
   publish = true
 
+  # * Environment Variables
+  environment_variables = {
+    DB_TABLE_NAME      = var.db_table_name
+    DELAY              = each.value.delay
+    URL                = each.value.url
+    PRINCIPAL_FILTER   = each.value.principal_filter
+    FILTER_NAME        = each.value.filter_name
+    FILTER_POSTED_DATE = each.value.filter_posted_date
+    FILTER_LINK        = each.value.filter_link
+    RECRUITER          = each.key
+  }
+
   trusted_entities = [
     {
       type = "Service",
