@@ -10,7 +10,7 @@
             "Resource": "${lambda_arn}"
         },
         {
-            "Sid": "AllowDynamoDB",
+            "Sid": "AllowIamPassRole",
             "Action": [
                 "iam:PassRole"
             ],
