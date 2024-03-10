@@ -26,9 +26,8 @@ module "openings_scraping" {
   maximum_retry_attempts    = 0
 
   # * Policies attachment
-  policies           = [aws_iam_policy.lambda_actions.arn]
-  attach_policies    = true
-  number_of_policies = 1
+  create_role = false
+  lambda_role = aws_iam_role.lambda.arn
 
   # * Publish the function
   publish = true
