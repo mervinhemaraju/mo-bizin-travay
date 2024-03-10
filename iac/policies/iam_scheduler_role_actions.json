@@ -1,0 +1,21 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowDynamoDB",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Effect": "Allow",
+            "Resource": "${lambda_arn}"
+        },
+        {
+            "Sid": "AllowDynamoDB",
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Effect": "Allow",
+            "Resource": "${iam_arn}"
+        }
+    ]
+}
