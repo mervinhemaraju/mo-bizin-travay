@@ -21,6 +21,10 @@ locals {
     }
   ]
 
+  ecr = {
+    repo_name = "python/mo-bizin-travay/scraper"
+  }
+
   lambda = {
     prefix_name = "mo-bizin-travay"
   }
