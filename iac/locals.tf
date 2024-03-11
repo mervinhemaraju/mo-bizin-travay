@@ -1,5 +1,14 @@
 
 locals {
+
+  default_tags = {
+    Environment = "prod"
+    Application = "mo-bizin-travay"
+    Owner       = "mervin.hemaraju"
+    Creator     = "mervin.hemaraju"
+    Project     = "https://github.com/mervinhemaraju/mo-bizin-travay"
+  }
+
   all_targets = [
     {
       recruiter          = "MCB",

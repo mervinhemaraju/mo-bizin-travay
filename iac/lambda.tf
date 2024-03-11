@@ -27,7 +27,7 @@ module "openings_scraping" {
 
   create_package = false
   package_type   = "Image"
-  image_uri      = "${module.mo_bizin_travay_scraper.repository_url}:prod"
+  image_uri      = data.aws_ecr_image.mobizintravay.image_uri
 
   hash_extra = trimprefix(data.aws_ecr_image.mobizintravay.id, "sha256:")
 
