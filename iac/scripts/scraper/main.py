@@ -4,8 +4,9 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from models.core.di import main_injection
 from models.core.web_driver import WebDriver
+from models.core.web_driver_test import WebDriverTest
 from models.db.opening import Opening
-from utils.extractors import retrieve_tag_href, retrieve_tag_text
+from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
 from models.db.opening_dao import ItemDao
 
 # Initialize Logging
@@ -14,8 +15,15 @@ logging.getLogger().setLevel(logging.INFO)
 
 @main_injection
 def main(event, context):
-    # Create a web driver instance
-    web_driver = WebDriver(di["URL"], di["DELAY"])
+    # Get the dry run flag
+    dry_run = "dry_run" in event
+
+    if not dry_run:
+        # Create a web driver instance
+        web_driver = WebDriver(di["URL"], di["DELAY"])
+    else:
+        # Create a web driver instance
+        web_driver = WebDriverTest(di["URL"], di["DELAY"])
 
     # Log event
     logging.info("Web driver has been intialized. Retrieving openings...")
@@ -30,11 +38,20 @@ def main(event, context):
     logging.info("Filtering the openings")
 
     for opening in opening_elements:
-        # outer = position.get_attribute("outerHTML")
+        # outer = opening.get_attribute("outerHTML")
+
+        # print(f"Outer {opening.get_attribute('outerHTML')}")
+
         soup = BeautifulSoup(opening.get_attribute("outerHTML"), "html.parser")
         opening_title = retrieve_tag_text(soup, di["FILTERS_NAME"])
-        opening_posted_date = retrieve_tag_text(soup, di["FILTER_POSTED_DATE"])
+        opening_posted_date = retrieve_date(soup, di["FILTER_POSTED_DATE"])
         link = retrieve_tag_href(soup, di["FILTER_LINK"])
+
+        print(
+            soup.select(
+                "li.jobs-list-item div.wrapper-cntr div.information span a div.job-title span"
+            )
+        )
 
         openings.append(
             Opening(
@@ -51,6 +68,20 @@ def main(event, context):
         logging.info(
             f"{len(openings)} openings obtained from recruiter {di['RECRUITER']}"
         )
+
+        # Verify if this is a dry run
+        if dry_run:
+            # Log event
+            logging.info("Dry run detected. No data will be saved.")
+
+            # Log event
+            logging.info(f"Openings obtained: {[str(o) for o in openings]}")
+
+            # Close the WebDriver
+            web_driver.quit()
+
+            # ! Raise exception
+            raise Exception("Dry run completed. No data was saved.")
 
         # Create a new ItemDao object
         item_dao = ItemDao()

@@ -1,6 +1,6 @@
 from main import main
 
-EVENT = {}
+EVENT = {"dry_run": True}
 
 CONTEXT = {}
 

@@ -5,12 +5,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class WebDriver:
+class WebDriverTest:
     def __init__(self, url, delay) -> None:
         # Set up Chrome WebDriver
         chrome_options = webdriver.ChromeOptions()
-        service = webdriver.ChromeService("/opt/chromedriver")
-        chrome_options.binary_location = "/opt/chrome/chrome"
+        service = webdriver.ChromeService()
+
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-gpu")
