@@ -29,6 +29,8 @@ module "openings_scraping" {
   package_type   = "Image"
   image_uri      = "${module.mo_bizin_travay_scraper.repository_url}:prod"
 
+  hash_extra = trimprefix(data.aws_ecr_image.mobizintravay.id, "sha256:")
+
   # * Environment Variables
   environment_variables = {
     DB_TABLE_NAME      = var.db_table_name
