@@ -8,7 +8,7 @@ resource "aws_iam_policy" "lambda" {
   policy = templatefile(
     "${path.module}/policies/iam_lambda_role_actions.json",
     {
-      dynamodb_arn         = data.aws_dynamodb_table.mo_bizin_travay.arn,
+      dynamodb_arn         = "${data.aws_dynamodb_table.mo_bizin_travay.arn}*",
       lambda_log_group     = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/mo-bizin-travay-*:*",
       lambda_log_group_all = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/mo-bizin-travay-*:*:*"
     }

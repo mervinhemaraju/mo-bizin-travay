@@ -9,17 +9,13 @@ module "openings_scraping" {
   version = "~> 4"
 
   # * Function basic info
-  function_name = "mo-bizin-travay-${lower(each.key)}"
+  function_name = "${local.lambda.prefix_name}-${lower(each.key)}"
   description   = "The lambda function Mo Bizin Travay for the recruiter ${each.key}"
   handler       = "main.main"
-  # runtime       = "python3.11"
 
   # * Function advance info
-  memory_size                       = 128
+  memory_size                       = 512
   cloudwatch_logs_retention_in_days = 14
-
-  # * Source code
-  # source_path = "./scripts/scraper/"
 
   timeout                   = 60
   create_async_event_config = false
@@ -31,7 +27,7 @@ module "openings_scraping" {
 
   create_package = false
   package_type   = "Image"
-  image_uri      = "${module.mo_bizin_travay_scraper.repository_url}:dev"
+  image_uri      = "${module.mo_bizin_travay_scraper.repository_url}:prod"
 
   # * Environment Variables
   environment_variables = {

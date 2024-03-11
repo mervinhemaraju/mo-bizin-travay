@@ -6,7 +6,7 @@ module "mo_bizin_travay_scraper" {
 
   #   repository_read_write_access_arns = ["arn:aws:iam::012345678901:role/terraform"]
   repository_lambda_read_access_arns = [
-    "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:mo-bizin-travay-*"
+    "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${local.lambda.prefix_name}-*"
   ]
 
   repository_force_delete         = true
