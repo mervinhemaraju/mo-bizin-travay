@@ -31,7 +31,7 @@ module "openings_scraping" {
 
   create_package = false
   package_type   = "Image"
-  image_uri      = "ghcr.io/mervinhemaraju/mo-bizin-travay:dev"
+  image_uri      = "ghcr.io/mervinhemaraju/mo-bizin-travay-scraper:dev"
 
   # * Environment Variables
   environment_variables = {
