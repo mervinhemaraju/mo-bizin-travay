@@ -4,6 +4,11 @@ provider "aws" {
 
   # * The AWS Environment Configurations
   region = var.region
+
+  # * Set the default tags
+  default_tags {
+    tags = local.default_tags
+  }
 }
 
 # * The Terraform Module
