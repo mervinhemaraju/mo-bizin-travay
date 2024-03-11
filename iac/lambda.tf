@@ -29,8 +29,6 @@ module "openings_scraping" {
   package_type   = "Image"
   image_uri      = data.aws_ecr_image.mobizintravay.image_uri
 
-  hash_extra = trimprefix(data.aws_ecr_image.mobizintravay.id, "sha256:")
-
   # * Environment Variables
   environment_variables = {
     DB_TABLE_NAME      = var.db_table_name

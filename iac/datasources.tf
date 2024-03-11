@@ -6,5 +6,5 @@ data "aws_dynamodb_table" "mo_bizin_travay" {
 
 data "aws_ecr_image" "mobizintravay" {
   repository_name = local.ecr.repo_name
-  image_tag       = "prod"
+  most_recent     = true
 }
