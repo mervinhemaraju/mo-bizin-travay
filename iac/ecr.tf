@@ -9,7 +9,8 @@ module "mo_bizin_travay_scraper" {
     "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:mo-bizin-travay-*"
   ]
 
-  repository_force_delete = true
+  repository_force_delete         = true
+  repository_image_tag_mutability = "MUTABLE"
 
   repository_lifecycle_policy = jsonencode({
     rules = [
