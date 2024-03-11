@@ -21,7 +21,7 @@ module "openings_scraping" {
   # * Source code
   # source_path = "./scripts/scraper/"
 
-  timeout                   = 600
+  timeout                   = 60
   create_async_event_config = false
   maximum_retry_attempts    = 0
 
