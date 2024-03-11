@@ -4,8 +4,9 @@ name: Create and publish a Docker image to GHCR
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
-  pull_request:
-      branches: ["main"]
+    branches:
+      - 'feature/*'
+      - 'main'
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
@@ -18,7 +19,7 @@ jobs:
 
     build-and-push-image-dev:
       runs-on: ubuntu-latest
-      if: github.ref_name != 'main'
+      if: startsWith(github.ref, 'refs/heads/feature/')
   
       # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
       permissions:
@@ -50,7 +51,7 @@ jobs:
 
     build-and-push-image-main:
       runs-on: ubuntu-latest
-      if: github.ref_name == 'main'
+      if: github.ref == 'refs/heads/main'
     
       # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
       permissions:

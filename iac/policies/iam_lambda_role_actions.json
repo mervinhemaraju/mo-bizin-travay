@@ -8,6 +8,19 @@
             ],
             "Effect": "Allow",
             "Resource": "${dynamodb_arn}"
+        },
+        {
+            "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogStream",
+                "logs:CreateLogGroup"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "${lambda_log_group}",
+                "${lambda_log_group_all}"
+            ],
+            "Sid": "AllowCloudwatchLogging"
         }
     ]
 }

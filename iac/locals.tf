@@ -12,6 +12,10 @@ locals {
     }
   ]
 
+  lambda = {
+    prefix_name = "mo-bizin-travay"
+  }
+
   schedule_group = {
     name = "mo-bizin-travay-schedules"
   }
