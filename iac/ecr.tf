@@ -17,10 +17,9 @@ module "mo_bizin_travay_scraper" {
         rulePriority = 1,
         description  = "Keep last 5 images",
         selection = {
-          tagStatus     = "tagged",
-          tagPrefixList = ["v"],
-          countType     = "imageCountMoreThan",
-          countNumber   = 5
+          tagStatus   = "any",
+          countType   = "imageCountMoreThan",
+          countNumber = 5
         },
         action = {
           type = "expire"
