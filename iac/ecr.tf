@@ -16,11 +16,11 @@ module "mo_bizin_travay_scraper" {
     rules = [
       {
         rulePriority = 1,
-        description  = "Keep last 5 images",
+        description  = "Keep last 3 images",
         selection = {
           tagStatus   = "any",
           countType   = "imageCountMoreThan",
-          countNumber = 5
+          countNumber = 3
         },
         action = {
           type = "expire"

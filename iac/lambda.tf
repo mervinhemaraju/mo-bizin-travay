@@ -12,14 +12,14 @@ module "openings_scraping" {
   function_name = "mo-bizin-travay-${lower(each.key)}"
   description   = "The lambda function Mo Bizin Travay for the recruiter ${each.key}"
   handler       = "main.main"
-  runtime       = "python3.11"
+  # runtime       = "python3.11"
 
   # * Function advance info
   memory_size                       = 128
   cloudwatch_logs_retention_in_days = 14
 
   # * Source code
-  source_path = "./scripts/scraper/"
+  # source_path = "./scripts/scraper/"
 
   timeout                   = 600
   create_async_event_config = false
@@ -29,9 +29,9 @@ module "openings_scraping" {
   create_role = false
   lambda_role = aws_iam_role.lambda.arn
 
-  # create_package = false
-  # package_type   = "Image"
-  # image_uri      = "ghcr.io/mervinhemaraju/mo-bizin-travay-scraper:dev"
+  create_package = false
+  package_type   = "Image"
+  image_uri      = "${module.mo_bizin_travay_scraper.repository_url}:dev"
 
   # * Environment Variables
   environment_variables = {
