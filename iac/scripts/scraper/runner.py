@@ -1,4 +1,5 @@
 from main import main
+# from test import main
 
 EVENT = {"dry_run": True}
 
