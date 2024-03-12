@@ -5,10 +5,11 @@ resource "aws_scheduler_schedule_group" "lambda_trigger" {
 
 resource "aws_scheduler_schedule" "lambda_scheduler" {
 
-  for_each = { for lambda in module.openings_scraping : lambda.lambda_function_arn => lambda }
+  # for_each = { for lambda in module.openings_scraping : lambda.lambda_function_arn => lambda }
+  for_each = { for target in local.all_targets : target.recruiter => target }
 
-  name                = "schedule-${each.value.lambda_function_name}"
-  description         = "The schedule for ${each.value.lambda_function_name}"
+  name                = "schedule-${local.lambda.prefix_name}-${lower(each.key)}"
+  description         = "The schedule for ${local.lambda.prefix_name}-${lower(each.key)}"
   group_name          = aws_scheduler_schedule_group.lambda_trigger.name
   schedule_expression = "rate(6 days)"
   state               = "ENABLED"
@@ -18,7 +19,7 @@ resource "aws_scheduler_schedule" "lambda_scheduler" {
   }
 
   target {
-    arn      = each.key
+    arn      = "arn:aws:lambda:${var.region}:${data.aws_caller_identity.current.account_id}:function:${local.lambda.prefix_name}-${lower(each.key)}"
     role_arn = aws_iam_role.scheduler.arn
 
     retry_policy {
