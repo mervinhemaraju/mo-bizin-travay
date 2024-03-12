@@ -16,9 +16,9 @@ class WebDriver:
         # If dry run enabled, add parameters
         if dry_run:
             service = webdriver.ChromeService()
-            chrome_options.binary_location = "/opt/chrome/chrome"
         else:
             service = webdriver.ChromeService("/opt/chromedriver")
+            chrome_options.binary_location = "/opt/chrome/chrome"
 
         # Set additional chrome options
         chrome_options.add_argument("--headless=new")
