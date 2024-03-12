@@ -2,41 +2,45 @@ import logging
 from kink import di
 from datetime import datetime
 from bs4 import BeautifulSoup
-from models.core.di import main_injection
 from models.core.web_driver import WebDriver
+from models.core.di import main_injection
 from models.db.opening import Opening
-from utils.extractors import retrieve_tag_href, retrieve_tag_text
+from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
 from models.db.opening_dao import ItemDao
 
 # Initialize Logging
 logging.getLogger().setLevel(logging.INFO)
 
+# Define empty list of openings
+OPENINGS = []
 
-@main_injection
-def main(event, context):
-    # Create a web driver instance
-    web_driver = WebDriver(di["URL"], di["DELAY"])
+
+# Other Functions
+def main_scraping_process(web_driver: WebDriver):
+    # Define global vars
+    global OPENINGS
 
     # Log event
     logging.info("Web driver has been intialized. Retrieving openings...")
 
-    # Load the opening elements
-    opening_elements = web_driver.load_elements(di["PRINCIPAL_FILTER"])
+    # Load the main container and opening elements
+    container, opening_elements = web_driver.load_elements(
+        wrapper_filter=di["WRAPPER_FILTER"], openings_filter=di["OPENINGS_FILTER"]
+    )
 
-    # Extract the HTML of all openings elements, parse them with BS4 and save to JSON
-    openings = []
-
-    # Log event
-    logging.info("Filtering the openings")
-
+    # Iterate through each opening elements
     for opening in opening_elements:
-        # outer = position.get_attribute("outerHTML")
+        # outer = opening.get_attribute("outerHTML")
+        # print(f"Outer {opening.get_attribute('outerHTML')}")
+
+        # Retrieve opening details
         soup = BeautifulSoup(opening.get_attribute("outerHTML"), "html.parser")
         opening_title = retrieve_tag_text(soup, di["FILTERS_NAME"])
-        opening_posted_date = retrieve_tag_text(soup, di["FILTER_POSTED_DATE"])
+        opening_posted_date = retrieve_date(soup, di["FILTER_POSTED_DATE"])
         link = retrieve_tag_href(soup, di["FILTER_LINK"])
 
-        openings.append(
+        # Append opening to the list
+        OPENINGS.append(
             Opening(
                 id=link,
                 title=opening_title,
@@ -46,11 +50,73 @@ def main(event, context):
             )
         )
 
-    if len(openings) > 0:
+    # Return the soup for the main container
+    return BeautifulSoup(container.get_attribute("outerHTML"), "html.parser")
+
+
+@main_injection
+def main(event, context):
+    # Define global vars
+    global OPENINGS
+
+    # Clear vars before starting
+    OPENINGS.clear()
+
+    # Get the dry run flag
+    dry_run = "dry_run" in event
+
+    # Create the web driver
+    web_driver = WebDriver(di["CAREERS_URL"], di["DELAY"], dry_run)
+
+    # Extract openings and retrieve the container soup
+    container_soup = main_scraping_process(web_driver=web_driver)
+
+    # Find the next button pagination
+    next_button = container_soup.select(di["FILTER_PAGINATION_BUTTON"])
+
+    # Verify if there is pagination
+    while len(next_button) > 0:
+        # Get the next url
+        new_url = next_button[0]["href"]
+
+        # If partial url, add prefix
+        if di["MAIN_URL"] not in new_url:
+            new_url = f"{di['MAIN_URL']}{new_url}"
+
+        # Log event
+        logging.info(f"Pagination found on url {new_url}")
+
+        # Close any previous drivers
+        if web_driver:
+            web_driver.quit()
+
+        # Recreate a new driver
+        web_driver = WebDriver(new_url, di["DELAY"], dry_run)
+
+        # Extract openings and retrieve the container soup
+        container_soup = main_scraping_process(web_driver=web_driver)
+
+        # Find the next button pagination
+        next_button = container_soup.select(di["FILTER_PAGINATION_BUTTON"])
+
+    if len(OPENINGS) > 0:
         # Log event
         logging.info(
-            f"{len(openings)} openings obtained from recruiter {di['RECRUITER']}"
+            f"{len(OPENINGS)} openings obtained from recruiter {di['RECRUITER']}"
         )
+
+        # Verify if this is a dry run
+        if dry_run:
+            # Log event
+            logging.info("Dry run detected. No data will be saved.")
+
+            # Log event
+            logging.info(
+                f"{len(OPENINGS)} Openings obtained: {[str(o) for o in OPENINGS]}"
+            )
+
+            # ! Raise exception
+            raise Exception("Dry run completed. No data was saved.")
 
         # Create a new ItemDao object
         item_dao = ItemDao()
@@ -73,13 +139,14 @@ def main(event, context):
         logging.info("Previous openings deleted")
 
         # Save the new openings
-        item_dao.save_all(openings=openings)
+        item_dao.save_all(openings=OPENINGS)
 
         # Log event
         logging.info("New openings saved successfully")
 
-    # Close the WebDriver
-    web_driver.quit()
+    # If web driver not empty, quit
+    if web_driver:
+        web_driver.quit()
 
     # Log event
     logging.info("Script completed successfully.")

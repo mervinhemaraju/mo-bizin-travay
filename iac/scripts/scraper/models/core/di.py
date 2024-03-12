@@ -12,12 +12,15 @@ def main_injection(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # * DI for os variables
-        di["URL"] = os.environ["URL"]
+        di["MAIN_URL"] = os.environ["MAIN_URL"]
+        di["CAREERS_URL"] = os.environ["CAREERS_URL"]
         di["DELAY"] = os.environ["DELAY"]
-        di["PRINCIPAL_FILTER"] = os.environ["PRINCIPAL_FILTER"]
+        di["WRAPPER_FILTER"] = os.environ["WRAPPER_FILTER"]
+        di["OPENINGS_FILTER"] = os.environ["OPENINGS_FILTER"]
         di["FILTERS_NAME"] = os.environ["FILTER_NAME"]
         di["FILTER_POSTED_DATE"] = os.environ["FILTER_POSTED_DATE"]
         di["FILTER_LINK"] = os.environ["FILTER_LINK"]
+        di["FILTER_PAGINATION_BUTTON"] = os.environ["FILTER_PAGINATION_BUTTON"]
         di["RECRUITER"] = os.environ["RECRUITER"]
         di["AWS_REGION"] = os.environ["AWS_REGION"]
         di["dynamodb_table"] = os.environ["DB_TABLE_NAME"]

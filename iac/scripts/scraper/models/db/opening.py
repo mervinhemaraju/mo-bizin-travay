@@ -17,3 +17,6 @@ class Opening(Model):
     posted_date = UnicodeAttribute()
     recruiter = UnicodeAttribute()
     updated_at = UnicodeAttribute()
+
+    def __str__(self) -> str:
+        return f"{self.title} - {self.recruiter} - {self.posted_date} - {self.updated_at} - {self.id}"
