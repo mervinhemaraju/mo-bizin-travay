@@ -2,7 +2,7 @@ module "mo_bizin_travay_table" {
 
   # Module info
   source  = "terraform-aws-modules/dynamodb-table/aws"
-  version = "4.0.1"
+  version = "4.0.0"
 
   # Basic DB Info
   name     = var.db_table_name
@@ -10,8 +10,8 @@ module "mo_bizin_travay_table" {
 
   # Capacity configs
   billing_mode   = "PROVISIONED"
-  read_capacity  = 25
-  write_capacity = 25
+  read_capacity  = 15
+  write_capacity = 10
 
   # Attributes
   attributes = [
