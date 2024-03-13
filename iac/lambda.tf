@@ -1,26 +1,32 @@
 
-# Lambda Function module
+# * Lambda Function module
 module "openings_scraping" {
 
   for_each = { for target in local.all_targets : target.recruiter => target }
 
   # * source module info
-  source  = "spacelift.io/mervinhemaraju/module-terraform-aws-lambda/aws"
-  version = "1.1.1"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "~> 4"
 
   # * Function basic info
   function_name = "${local.lambda.prefix_name}-${lower(each.key)}"
   description   = "The lambda function Mo Bizin Travay for the recruiter ${each.key}"
-  source_path   = null
+  handler       = "main.main"
 
   # * Function advance info
-  memory_size = 512
-  timeout     = 60
+  memory_size                       = 512
+  cloudwatch_logs_retention_in_days = 14
+
+  timeout                   = 60
+  create_async_event_config = false
+  maximum_retry_attempts    = 0
 
   # * Policies attachment
-  lambda_role_arn = aws_iam_role.lambda.arn
+  create_role = false
+  lambda_role = aws_iam_role.lambda.arn
 
   create_package = false
+  package_type   = "Image"
   image_uri      = data.aws_ecr_image.mobizintravay.image_uri
 
   # * Environment Variables
@@ -38,10 +44,13 @@ module "openings_scraping" {
     DB_TABLE_NAME            = var.db_table_name
   }
 
-  cron = "rate(6 days)"
-
-  schedule_group = aws_scheduler_schedule_group.lambda_trigger.name
-
-  schedule_role_arn = aws_iam_role.scheduler.arn
+  trusted_entities = [
+    {
+      type = "Service",
+      identifiers = [
+        "lambda.amazonaws.com"
+      ]
+    }
+  ]
 }
 
