@@ -4,8 +4,6 @@ resource "aws_scheduler_schedule_group" "lambda_trigger" {
 }
 
 resource "aws_scheduler_schedule" "lambda_scheduler" {
-
-  # for_each = { for lambda in module.openings_scraping : lambda.lambda_function_arn => lambda }
   for_each = { for target in local.all_targets : target.recruiter => target }
 
   name                = "schedule-${local.lambda.prefix_name}-${lower(each.key)}"
