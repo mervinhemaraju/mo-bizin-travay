@@ -7,6 +7,7 @@ locals {
     Owner       = "mervin.hemaraju"
     Creator     = "mervin.hemaraju"
     Project     = "https://github.com/mervinhemaraju/mo-bizin-travay"
+    Terraform   = "Yes"
   }
 
   all_targets = [
