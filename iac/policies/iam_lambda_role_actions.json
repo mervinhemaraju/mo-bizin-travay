@@ -2,7 +2,7 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "AllowDynamoDB",
+            "Sid": "AllowDynamoDBAccess",
             "Action": [
                 "dynamodb:*"
             ],
@@ -10,6 +10,7 @@
             "Resource": "${dynamodb_arn}"
         },
         {
+            "Sid": "AllowCloudwatchLogging",
             "Action": [
                 "logs:PutLogEvents",
                 "logs:CreateLogStream",
@@ -19,8 +20,7 @@
             "Resource": [
                 "${lambda_log_group}",
                 "${lambda_log_group_all}"
-            ],
-            "Sid": "AllowCloudwatchLogging"
+            ]
         }
     ]
 }
