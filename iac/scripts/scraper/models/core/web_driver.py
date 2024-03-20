@@ -1,3 +1,4 @@
+import logging
 from tempfile import mkdtemp
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,7 +7,15 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class WebDriver:
+    # Define custom headers
+    custom_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.9999.99 Safari/537.36",
+    }
+
     def __init__(self, url, delay, dry_run) -> None:
+        # Log event
+        logging.info("Setting chrome options.")
+
         # Set up Chrome WebDriver
         chrome_options = webdriver.ChromeOptions()
 
@@ -33,15 +42,24 @@ class WebDriver:
         chrome_options.add_argument(f"--data-path={mkdtemp()}")
         chrome_options.add_argument(f"--disk-cache-dir={mkdtemp()}")
         chrome_options.add_argument("--remote-debugging-port=9222")
+        # Add custom headers to Chrome options
+        chrome_options.add_argument(f'user-agent={self.custom_headers["User-Agent"]}')
 
         # Set chrome web driver
         self.chrome = webdriver.Chrome(options=chrome_options, service=service)
+
+        # Log event
+        logging.info("Chrome options has been applied.")
+        logging.info(f"Fetching url {self.url}")
 
         # Open the desired webpage
         self.chrome.get(self.url)
 
         # Sets the delay
         self.delay = delay
+
+        # Log event
+        logging.info(f"Web driver initialized with url {url}")
 
     def load_elements(self, wrapper_filter, openings_filter):
         # Wait for main container

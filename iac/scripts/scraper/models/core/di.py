@@ -26,6 +26,7 @@ def main_injection(func):
         di["dynamodb_table"] = os.environ["DB_TABLE_NAME"]
         di["SOURCE"] = os.environ["SOURCE"]
         di["SOURCE_URL"] = os.environ["SOURCE_URL"]
+        di["SOURCE_URL_SUFFIX"] = os.environ.get("SOURCE_URL_SUFFIX", None)
 
         # * Boto3 variables
         di["boto_config"] = Config(region_name=di["AWS_REGION"], signature_version="v4")

@@ -29,21 +29,6 @@ module "openings_scraping" {
   package_type   = "Image"
   image_uri      = data.aws_ecr_image.mobizintravay.image_uri
 
-  # * Environment Variables
-  # environment_variables = {
-  #   RECRUITER                = each.key
-  #   DELAY                    = each.value.delay
-  #   MAIN_URL                 = each.value.main_url
-  #   CAREERS_URL              = each.value.careers_url
-  #   WRAPPER_FILTER           = each.value.wrapper_filter
-  #   OPENINGS_FILTER          = each.value.openings_filter
-  #   FILTER_NAME              = each.value.filter_name
-  #   FILTER_POSTED_DATE       = each.value.filter_posted_date
-  #   FILTER_LINK              = each.value.filter_link
-  #   FILTER_PAGINATION_BUTTON = each.value.filter_pagination_button
-  #   DB_TABLE_NAME            = var.db_table_name
-  # }
-
   environment_variables = {
     DELAY              = 15
     SECRETS_MAIN_TOKEN = var.token_doppler_iac_cloud_main
@@ -51,6 +36,7 @@ module "openings_scraping" {
     DB_TABLE_NAME      = var.db_table_name
     SOURCE             = each.key
     SOURCE_URL         = each.value.source_url
+    SOURCE_URL_SUFFIX  = each.value.source_url.suffix
   }
 
   trusted_entities = [

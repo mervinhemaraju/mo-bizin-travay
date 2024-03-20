@@ -24,7 +24,7 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
     global OPENINGS, OPENINGS_IDS
 
     # Log event
-    logging.info("Web driver has been intialized. Retrieving openings...")
+    logging.info("Starting scraping process. Retrieving openings...")
 
     # Load the main container and opening elements
     container, opening_elements = web_driver.load_elements(
@@ -64,7 +64,9 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
             # Append opening to the list
             OPENINGS.append(
                 Opening(
-                    id=link,
+                    id=link
+                    if di["SOURCE_URL"] in link
+                    else f"{di['SOURCE_URL']}{link}",
                     title=title,
                     posted_date=posted_date.strftime("%Y-%m-%d")
                     if posted_date
@@ -101,8 +103,15 @@ def main(event, context):
     delay = event["delay"] if "delay" in event else di["DELAY"]
     filters = event["filters"]
 
+    # Construct url
+    source_url = (
+        di["SOURCE_URL"]
+        if not di["SOURCE_URL_SUFFIX"]
+        else f"{di['SOURCE_URL']}{di['SOURCE_URL_SUFFIX']}"
+    )
+
     # Create the web driver
-    web_driver = WebDriver(di["SOURCE_URL"], delay, dry_run)
+    web_driver = WebDriver(source_url, delay, dry_run)
 
     # Extract openings and retrieve the container soup
     container_soup = main_scraping_process(web_driver=web_driver, filters=filters)

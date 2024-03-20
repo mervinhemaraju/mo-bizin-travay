@@ -19,5 +19,21 @@ EVENT_JOBS_MU = {
     },
 }
 
+EVENT_MYJOB_MU = {
+    "dry_run": True,
+    "filters": {
+        "wrapper": "div#page",
+        "openings": "div.module.job-result",
+        "name": "div.module-content div.job-result-logo-title div.job-result-title h2 a",
+        "posted_date": "div.module-content div.job-result-overview ul.job-overview li.updated-time",
+        "closing_date": "div.module-content div.job-result-overview ul.job-overview li.closed-time",
+        "recruiter": "div.module-content div.job-result-logo-title div.job-result-title h3 a",
+        "salary_range": "div.module-content div.job-result-overview ul.job-overview li.salary",
+        "location": "div.module-content div.job-result-overview ul.job-overview li.location",
+        "link": "div.module-content div.job-result-logo-title div.job-result-title h2 a",
+        "pagination_button": "ul#pagination li:last-child a",
+    },
+}
+
 if __name__ == "__main__":
-    main(EVENT_JOBS_MU, CONTEXT)
+    main(EVENT_MYJOB_MU, CONTEXT)
