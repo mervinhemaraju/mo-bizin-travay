@@ -4,10 +4,11 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from models.core.web_driver import WebDriver
 from models.core.di import main_injection
+from models.core.exceptions import DryRunException
 from models.db.opening import Opening
-from models.db.opening_dao import ItemDao
-from utils.functions import post_to_slack
+from utils.functions import post_to_slack, file_transact, db_transact
 from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
+from utils.slack_blocks import block_completed, block_error, block_info
 
 # Initialize Logging
 logging.getLogger().setLevel(logging.INFO)
@@ -96,119 +97,145 @@ def main(event, context):
     OPENINGS_IDS.clear()
     VISITED_URLS.clear()
 
-    # Get the dry run flag
-    dry_run = "dry_run" in event
-
-    # Retrieve event parameters
-    delay = event["delay"] if "delay" in event else di["DELAY"]
-    filters = event["filters"]
-
-    # Construct url
-    source_url = (
-        di["SOURCE_URL"]
-        if not di["SOURCE_URL_SUFFIX"]
-        else f"{di['SOURCE_URL']}{di['SOURCE_URL_SUFFIX']}"
+    # Post message to slack
+    _, thread_ts = post_to_slack(
+        blocks=block_info(
+            message=f"mo-bizin-travay trigerred from source `{di['SOURCE']}` with url `{di['SOURCE_URL']}`"
+        )
     )
 
-    # Create the web driver
-    web_driver = WebDriver(source_url, delay, dry_run)
+    try:
+        # Get the dry run flag
+        dry_run = "dry_run" in event
 
-    # Extract openings and retrieve the container soup
-    container_soup = main_scraping_process(web_driver=web_driver, filters=filters)
+        # Retrieve event parameters
+        delay = event["delay"] if "delay" in event else di["DELAY"]
+        filters = event["filters"]
 
-    # Find the next button pagination
-    next_button = (
-        container_soup.select(filters["pagination_button"])
-        if filters["pagination_button"]
-        else []
-    )
+        # Construct url
+        source_url = (
+            di["SOURCE_URL"]
+            if not di["SOURCE_URL_SUFFIX"]
+            else f"{di['SOURCE_URL']}{di['SOURCE_URL_SUFFIX']}"
+        )
 
-    # Verify if there is pagination
-    while len(next_button) > 0:
-        # Get the next url
-        new_url = next_button[0]["href"]
-
-        # If partial url, add prefix
-        if di["SOURCE_URL"] not in new_url:
-            new_url = f"{di['SOURCE_URL']}{new_url}"
-
-        # If the new url has already been visited
-        # break the loop as the pagination has
-        # started all over again
-        if new_url in VISITED_URLS:
-            # Log event
-            logging.warn(
-                "Pagination has looped back to the first page. Breaking the loop."
-            )
-
-            # Break loop
-            break
-
-        # Add URL to the visited URL
-        VISITED_URLS.append(new_url)
-
-        # Log event
-        logging.info(f"Pagination found on url {new_url}")
-
-        # Close any previous drivers
-        if web_driver:
-            web_driver.quit()
-
-        # Recreate a new driver
-        web_driver = WebDriver(new_url, delay, dry_run)
+        # Create the web driver
+        web_driver = WebDriver(source_url, delay, dry_run)
 
         # Extract openings and retrieve the container soup
         container_soup = main_scraping_process(web_driver=web_driver, filters=filters)
 
         # Find the next button pagination
-        next_button = container_soup.select(filters["pagination_button"])
-
-    if len(OPENINGS) > 0:
-        # Log event
-        logging.info(f"{len(OPENINGS)} openings obtained from source {di['SOURCE']}")
-
-        # Verify if this is a dry run
-        if dry_run:
-            # Log event
-            logging.info("Dry run detected. No data will be saved.")
-
-            # Log event
-            logging.info(
-                f"{len(OPENINGS)} Openings obtained: {[str(o) for o in OPENINGS]}"
-            )
-
-            # ! Raise exception
-            raise Exception("Dry run completed. No data was saved.")
-
-        # Create a new ItemDao object
-        item_dao = ItemDao()
-
-        # Log event
-        logging.info("Retrieving previous openings...")
-
-        # Retrieve the previous openings
-        previous_openings = item_dao.get_items_by_source(source=di["SOURCE"])
-
-        # Log event
-        logging.info(
-            f"{len(previous_openings)} previous openings obtained from recruiter {di['SOURCE']}"
+        next_button = (
+            container_soup.select(filters["pagination_button"])
+            if filters["pagination_button"]
+            else []
         )
 
-        # Clear the previous openings from that recruiter
-        item_dao.delete_all(openings=previous_openings)
+        # Verify if there is pagination
+        while len(next_button) > 0:
+            # Get the next url
+            new_url = next_button[0]["href"]
+
+            # If partial url, add prefix
+            if di["SOURCE_URL"] not in new_url:
+                new_url = f"{di['SOURCE_URL']}{new_url}"
+
+            # If the new url has already been visited
+            # break the loop as the pagination has
+            # started all over again
+            if new_url in VISITED_URLS:
+                # Log event
+                logging.warn(
+                    "Pagination has looped back to the first page. Breaking the loop."
+                )
+
+                # Break loop
+                break
+
+            # Add URL to the visited URL
+            VISITED_URLS.append(new_url)
+
+            # Log event
+            logging.info(f"Pagination found on url {new_url}")
+
+            # Close any previous drivers
+            if web_driver:
+                web_driver.quit()
+
+            # Recreate a new driver
+            web_driver = WebDriver(new_url, delay, dry_run)
+
+            # Extract openings and retrieve the container soup
+            container_soup = main_scraping_process(
+                web_driver=web_driver, filters=filters
+            )
+
+            # Find the next button pagination
+            next_button = container_soup.select(filters["pagination_button"])
+
+        if len(OPENINGS) > 0:
+            # Log event
+            logging.info(
+                f"{len(OPENINGS)} openings obtained from source {di['SOURCE']}"
+            )
+
+            # Post to slack
+            post_to_slack(
+                blocks=block_info(
+                    message=f"`{len(OPENINGS)}` openings obtained from source `{di['SOURCE']}`"
+                ),
+                thread_ts=thread_ts,
+            )
+
+            # Verify if this is a dry run
+            if dry_run:
+                # Log event
+                logging.info("Dry run detected. No data will be saved.")
+
+                # Post to slack
+                post_to_slack(
+                    blocks=block_info(message="Script is running in `dry run` mode"),
+                    thread_ts=thread_ts,
+                )
+
+                # Log event
+                logging.info(
+                    f"{len(OPENINGS)} Openings obtained: {[str(o) for o in OPENINGS]}"
+                )
+
+                # Export openings to json file
+                file_transact(openings=OPENINGS)
+
+                # ! Raise exception
+                raise Exception("Dry run completed. No data was saved.")
+
+            # Save openings to DB
+            db_transact(openings=OPENINGS)
+
+        # If web driver not empty, quit
+        if web_driver:
+            web_driver.quit()
 
         # Log event
-        logging.info("Previous openings deleted")
+        logging.info("Script completed successfully.")
 
-        # Save the new openings
-        item_dao.save_all(openings=OPENINGS)
+        # Post to slack
+        post_to_slack(blocks=block_completed(), thread_ts=thread_ts)
 
-        # Log event
-        logging.info("New openings saved successfully")
+    except DryRunException as dre:
+        # Log error
+        logging.error(f"Dry Run initiated: {dre}")
 
-    # If web driver not empty, quit
-    if web_driver:
-        web_driver.quit()
+        # Post to slack
+        post_to_slack(
+            blocks=block_error(error_message="Dry run completed."),
+            thread_ts=thread_ts,
+        )
 
-    # Log event
-    logging.info("Script completed successfully.")
+    except Exception as e:
+        # Log error
+        logging.error(f"Error occurred: {str(e)}")
+
+        # Post to slack
+        post_to_slack(blocks=block_error(error_message=str(e)), thread_ts=thread_ts)
