@@ -15,8 +15,12 @@ class Opening(Model):
     id = UnicodeAttribute(hash_key=True)
     title = UnicodeAttribute()
     posted_date = UnicodeAttribute()
+    closing_date = UnicodeAttribute()
+    salary_range = UnicodeAttribute()
+    location = UnicodeAttribute()
     recruiter = UnicodeAttribute()
     updated_at = UnicodeAttribute()
+    source = UnicodeAttribute()
 
     def __str__(self) -> str:
-        return f"{self.title} - {self.recruiter} - {self.posted_date} - {self.updated_at} - {self.id}"
+        return str(vars(self))

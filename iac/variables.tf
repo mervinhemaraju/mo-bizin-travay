@@ -7,6 +7,17 @@ variable "region" {
 
 variable "db_table_name" {
   type        = string
-  description = "The DB table name"
+  description = "The DB table name."
   default     = "mo-bizin-travay"
+}
+
+variable "slack_channel" {
+  type        = string
+  description = "The slack channel to post messages to."
+  default     = "#testing"
+}
+
+variable "token_doppler_iac_cloud_main" {
+  type        = string
+  description = "The token for secrets manager Doppler main project."
 }

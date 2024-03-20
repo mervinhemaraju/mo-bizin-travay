@@ -17,10 +17,23 @@ resource "aws_dynamodb_table" "mo_bizin_travay" {
     type = "S"
   }
 
+  attribute {
+    name = "source"
+    type = "S"
+  }
+
 
   global_secondary_index {
     name            = "recruiter_index"
     hash_key        = "recruiter"
+    write_capacity  = 10
+    read_capacity   = 10
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "source_index"
+    hash_key        = "source"
     write_capacity  = 10
     read_capacity   = 10
     projection_type = "ALL"

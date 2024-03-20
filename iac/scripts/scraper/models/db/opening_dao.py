@@ -37,3 +37,18 @@ class ItemDao:
 
         # Converts the json to python objects
         return [Opening(**item) for item in items]
+
+    def get_items_by_source(self, source) -> list[Opening]:
+        # Queries the source from GSI
+        data = self.db.query(
+            IndexName="source_index",
+            TableName=self.table,
+            KeyConditionExpression="source = :attr",
+            ExpressionAttributeValues={":attr": {"S": source}},
+        )
+
+        # Loads and format the items
+        items = json.loads(data["Items"])
+
+        # Converts the json to python objects
+        return [Opening(**item) for item in items]
