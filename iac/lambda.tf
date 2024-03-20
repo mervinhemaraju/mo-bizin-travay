@@ -49,7 +49,7 @@ module "openings_scraping" {
     SECRETS_MAIN_TOKEN = var.token_doppler_iac_cloud_main
     SLACK_CHANNEL      = var.slack_channel
     DB_TABLE_NAME      = var.db_table_name
-    SOURCE             = each.value.key
+    SOURCE             = each.key
     SOURCE_URL         = each.value.source_url
   }
 
