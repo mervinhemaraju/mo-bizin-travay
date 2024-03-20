@@ -126,25 +126,20 @@ def main(event, context):
         container_soup = main_scraping_process(web_driver=web_driver, filters=filters)
 
         # Find the next button pagination
-        next_button = (
-            container_soup.select(filters["pagination_button"])
-            if filters["pagination_button"]
-            else []
+        next_button_url = retrieve_tag_href(
+            soup=container_soup, filter=filters["pagination_button"]
         )
 
         # Verify if there is pagination
-        while len(next_button) > 0:
-            # Get the next url
-            new_url = next_button[0]["href"]
-
+        while next_button_url is not None:
             # If partial url, add prefix
-            if di["SOURCE_URL"] not in new_url:
-                new_url = f"{di['SOURCE_URL']}{new_url}"
+            if di["SOURCE_URL"] not in next_button_url:
+                next_button_url = f"{di['SOURCE_URL']}{next_button_url}"
 
             # If the new url has already been visited
             # break the loop as the pagination has
             # started all over again
-            if new_url in VISITED_URLS:
+            if next_button_url in VISITED_URLS:
                 # Log event
                 logging.warn(
                     "Pagination has looped back to the first page. Breaking the loop."
@@ -154,17 +149,17 @@ def main(event, context):
                 break
 
             # Add URL to the visited URL
-            VISITED_URLS.append(new_url)
+            VISITED_URLS.append(next_button_url)
 
             # Log event
-            logging.info(f"Pagination found on url {new_url}")
+            logging.info(f"Pagination found on url {next_button_url}")
 
             # Close any previous drivers
             if web_driver:
                 web_driver.quit()
 
             # Recreate a new driver
-            web_driver = WebDriver(new_url, delay, dry_run)
+            web_driver = WebDriver(next_button_url, delay, dry_run)
 
             # Extract openings and retrieve the container soup
             container_soup = main_scraping_process(
@@ -172,7 +167,9 @@ def main(event, context):
             )
 
             # Find the next button pagination
-            next_button = container_soup.select(filters["pagination_button"])
+            next_button_url = retrieve_tag_href(
+                soup=container_soup, filter=filters["pagination_button"]
+            )
 
         if len(OPENINGS) > 0:
             # Log event
@@ -200,9 +197,9 @@ def main(event, context):
                 )
 
                 # Log event
-                logging.info(
-                    f"{len(OPENINGS)} Openings obtained: {[str(o) for o in OPENINGS]}"
-                )
+                # logging.info(
+                #     f"{len(OPENINGS)} The following titles were obtained: {[str(o.title) for o in OPENINGS]}"
+                # )
 
                 # Export openings to json file
                 file_transact(openings=OPENINGS)
