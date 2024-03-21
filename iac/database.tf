@@ -1,8 +1,8 @@
 resource "aws_dynamodb_table" "mo_bizin_travay" {
   name           = var.db_table_name
   billing_mode   = "PROVISIONED"
-  read_capacity  = 15
-  write_capacity = 10
+  read_capacity  = 25
+  write_capacity = 25
   hash_key       = "id"
 
   stream_enabled = false
