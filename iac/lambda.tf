@@ -14,7 +14,7 @@ module "openings_scraping" {
   handler       = "main.main"
 
   # * Function advance info
-  memory_size                       = 800
+  memory_size                       = 1024
   cloudwatch_logs_retention_in_days = 14
 
   timeout                   = 600
