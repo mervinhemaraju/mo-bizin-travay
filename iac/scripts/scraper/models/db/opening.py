@@ -20,7 +20,7 @@ class Opening(Model):
     location = UnicodeAttribute()
     recruiter = UnicodeAttribute()
     updated_at = UnicodeAttribute()
-    source = UnicodeAttribute()
+    opening_source = UnicodeAttribute()
 
     def __str__(self) -> str:
         return str(vars(self))

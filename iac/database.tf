@@ -18,7 +18,7 @@ resource "aws_dynamodb_table" "mo_bizin_travay" {
   }
 
   attribute {
-    name = "source"
+    name = "opening_source"
     type = "S"
   }
 
@@ -32,8 +32,8 @@ resource "aws_dynamodb_table" "mo_bizin_travay" {
   }
 
   global_secondary_index {
-    name            = "source_index"
-    hash_key        = "source"
+    name            = "opening_source_index"
+    hash_key        = "opening_source"
     write_capacity  = 10
     read_capacity   = 10
     projection_type = "ALL"

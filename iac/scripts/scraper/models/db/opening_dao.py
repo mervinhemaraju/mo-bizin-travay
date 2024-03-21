@@ -41,9 +41,9 @@ class ItemDao:
     def get_items_by_source(self, source) -> list[Opening]:
         # Queries the source from GSI
         data = self.db.query(
-            IndexName="source_index",
+            IndexName="opening_source_index",
             TableName=self.table,
-            KeyConditionExpression="source = :attr",
+            KeyConditionExpression="opening_source = :attr",
             ExpressionAttributeValues={":attr": {"S": source}},
         )
 
