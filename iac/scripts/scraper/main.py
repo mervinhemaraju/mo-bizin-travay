@@ -62,6 +62,9 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
 
         # Verify if link is already present
         if link not in OPENINGS_IDS:
+            # Append the opening id to the list
+            OPENINGS_IDS.append(link)
+
             # Append opening to the list
             OPENINGS.append(
                 Opening(
