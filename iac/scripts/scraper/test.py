@@ -105,7 +105,7 @@ def main(event, context):
                 location="Test",
                 salary_range="Test",
                 updated_at="Test",
-                source="Test",
+                opening_source="Test",
             )
         )
 
