@@ -14,7 +14,7 @@ variable "db_table_name" {
 variable "slack_channel" {
   type        = string
   description = "The slack channel to post messages to."
-  default     = "#testing"
+  default     = "#mo-bizin-travay"
 }
 
 variable "token_doppler_iac_cloud_main" {
