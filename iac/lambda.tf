@@ -17,7 +17,7 @@ module "openings_scraping" {
   memory_size                       = 512
   cloudwatch_logs_retention_in_days = 14
 
-  timeout                   = 60
+  timeout                   = 600
   create_async_event_config = false
   maximum_retry_attempts    = 0
 
@@ -36,7 +36,7 @@ module "openings_scraping" {
     DB_TABLE_NAME      = var.db_table_name
     SOURCE             = each.key
     SOURCE_URL         = each.value.source_url
-    SOURCE_URL_SUFFIX  = each.value.source_url.suffix
+    SOURCE_URL_SUFFIX  = each.value.source_url_suffix
   }
 
   trusted_entities = [

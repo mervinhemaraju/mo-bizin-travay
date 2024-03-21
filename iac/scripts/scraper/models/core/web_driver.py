@@ -52,6 +52,9 @@ class WebDriver:
         logging.info("Chrome options has been applied.")
         logging.info(f"Fetching url {self.url}")
 
+        # Set the page timeout
+        self.chrome.set_page_load_timeout(int(delay) + 10)
+
         # Open the desired webpage
         self.chrome.get(self.url)
 
