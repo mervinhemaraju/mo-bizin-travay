@@ -4,7 +4,7 @@ resource "aws_scheduler_schedule_group" "lambda_trigger" {
 }
 
 resource "aws_scheduler_schedule" "lambda_scheduler" {
-  for_each = { for target in local.all_targets : target.recruiter => target }
+  for_each = { for target in local.all_targets : target.source => target }
 
   name                = "schedule-${local.lambda.prefix_name}-${lower(each.key)}"
   description         = "The schedule for ${local.lambda.prefix_name}-${lower(each.key)}"
@@ -23,6 +23,12 @@ resource "aws_scheduler_schedule" "lambda_scheduler" {
     retry_policy {
       maximum_retry_attempts = 0
     }
+
+    input = jsonencode(
+      {
+        filters = each.value.filters
+      }
+    )
   }
 
   depends_on = [module.openings_scraping, aws_scheduler_schedule_group.lambda_trigger]

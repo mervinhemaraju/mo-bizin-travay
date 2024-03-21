@@ -4,51 +4,87 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from models.core.web_driver import WebDriver
 from models.core.di import main_injection
+from models.core.exceptions import DryRunException
 from models.db.opening import Opening
+from utils.functions import post_to_slack, file_transact, db_transact
 from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
-from models.db.opening_dao import ItemDao
+from utils.slack_blocks import block_completed, block_error, block_info
 
 # Initialize Logging
 logging.getLogger().setLevel(logging.INFO)
 
 # Define empty list of openings
-OPENINGS = []
+OPENINGS: list[Opening] = []
+OPENINGS_IDS: list[str] = []
+VISITED_URLS: list[str] = []
 
 
 # Other Functions
-def main_scraping_process(web_driver: WebDriver):
+def main_scraping_process(web_driver: WebDriver, filters: dict):
     # Define global vars
-    global OPENINGS
+    global OPENINGS, OPENINGS_IDS
 
     # Log event
-    logging.info("Web driver has been intialized. Retrieving openings...")
+    logging.info("Starting scraping process. Retrieving openings...")
 
     # Load the main container and opening elements
     container, opening_elements = web_driver.load_elements(
-        wrapper_filter=di["WRAPPER_FILTER"], openings_filter=di["OPENINGS_FILTER"]
+        wrapper_filter=filters["wrapper"],
+        openings_filter=filters["openings"],
     )
 
     # Iterate through each opening elements
     for opening in opening_elements:
         # outer = opening.get_attribute("outerHTML")
-        # print(f"Outer {opening.get_attribute('outerHTML')}")
+        # print(f"Outer {outer}")
 
         # Retrieve opening details
         soup = BeautifulSoup(opening.get_attribute("outerHTML"), "html.parser")
-        opening_title = retrieve_tag_text(soup, di["FILTERS_NAME"])
-        opening_posted_date = retrieve_date(soup, di["FILTER_POSTED_DATE"])
-        link = retrieve_tag_href(soup, di["FILTER_LINK"])
+        title = retrieve_tag_text(soup, filters["name"])
+        posted_date = retrieve_date(soup, filters["posted_date"])
+        closing_date = retrieve_date(soup, filters["closing_date"])
+        recruiter = retrieve_tag_text(soup, filters["recruiter"])
+        salary_range = retrieve_tag_text(soup, filters["salary_range"])
+        location = retrieve_tag_text(soup, filters["location"])
+        link = retrieve_tag_href(soup, filters["link"])
 
-        # Append opening to the list
-        OPENINGS.append(
-            Opening(
-                id=link,
-                title=opening_title,
-                posted_date=opening_posted_date,
-                recruiter=di["RECRUITER"],
-                updated_at=datetime.now().strftime("%Y-%m-%d"),
+        # If closing date is obtained and
+        # closing date is before today,
+        # no need to keep the opening.
+        if closing_date and closing_date < datetime.now():
+            # Log event
+            logging.info(
+                f"Closing date for title {title} is before today. Skipping it..."
             )
-        )
+
+            # Skip to next
+            continue
+
+        # Verify if link is already present
+        if link not in OPENINGS_IDS:
+            # Append the opening id to the list
+            OPENINGS_IDS.append(link)
+
+            # Append opening to the list
+            OPENINGS.append(
+                Opening(
+                    id=link
+                    if link.startswith(di["DOMAIN"])
+                    else f"{di['SOURCE_URL']}{link}",
+                    title=title,
+                    posted_date=posted_date.strftime("%Y-%m-%d")
+                    if posted_date
+                    else "N/A",
+                    closing_date=closing_date.strftime("%Y-%m-%d")
+                    if closing_date
+                    else "N/A",
+                    recruiter=recruiter,
+                    location=location,
+                    salary_range=salary_range,
+                    updated_at=datetime.now().strftime("%Y-%m-%d"),
+                    opening_source=di["SOURCE"],
+                )
+            )
 
     # Return the soup for the main container
     return BeautifulSoup(container.get_attribute("outerHTML"), "html.parser")
@@ -57,96 +93,142 @@ def main_scraping_process(web_driver: WebDriver):
 @main_injection
 def main(event, context):
     # Define global vars
-    global OPENINGS
+    global OPENINGS, OPENINGS_IDS, VISITED_URLS
 
     # Clear vars before starting
     OPENINGS.clear()
+    OPENINGS_IDS.clear()
+    VISITED_URLS.clear()
 
-    # Get the dry run flag
-    dry_run = "dry_run" in event
+    # Post message to slack
+    _, thread_ts = post_to_slack(
+        blocks=block_info(
+            message=f"mo-bizin-travay trigerred from source `{di['SOURCE']}` with url `{di['SOURCE_URL']}`"
+        )
+    )
 
-    # Create the web driver
-    web_driver = WebDriver(di["CAREERS_URL"], di["DELAY"], dry_run)
+    try:
+        # Get the dry run flag
+        dry_run = "dry_run" in event
 
-    # Extract openings and retrieve the container soup
-    container_soup = main_scraping_process(web_driver=web_driver)
+        # Retrieve event parameters
+        delay = event["delay"] if "delay" in event else di["DELAY"]
+        filters = event["filters"]
 
-    # Find the next button pagination
-    next_button = container_soup.select(di["FILTER_PAGINATION_BUTTON"])
+        # Create the web driver
+        web_driver = WebDriver(di["STARTUP_URL"], delay, dry_run)
 
-    # Verify if there is pagination
-    while len(next_button) > 0:
-        # Get the next url
-        new_url = next_button[0]["href"]
+        # Extract openings and retrieve the container soup
+        container_soup = main_scraping_process(web_driver=web_driver, filters=filters)
 
-        # If partial url, add prefix
-        if di["MAIN_URL"] not in new_url:
-            new_url = f"{di['MAIN_URL']}{new_url}"
+        # Find the next button pagination
+        next_button_url = retrieve_tag_href(
+            soup=container_soup, filter=filters["pagination_button"]
+        )
 
-        # Log event
-        logging.info(f"Pagination found on url {new_url}")
+        # Verify if there is pagination
+        while next_button_url is not None:
+            # If partial url, add prefix
+            if di["DOMAIN"] not in next_button_url:
+                next_button_url = f"{di['SOURCE_URL']}{next_button_url}"
 
-        # Close any previous drivers
+            # If the new url has already been visited
+            # break the loop as the pagination has
+            # started all over again
+            if next_button_url in VISITED_URLS:
+                # Log event
+                logging.warn(
+                    "Pagination has looped back to the first page. Breaking the loop."
+                )
+
+                # Break loop
+                break
+
+            # Add URL to the visited URL
+            VISITED_URLS.append(next_button_url)
+
+            # Log event
+            logging.info(f"Pagination found on url {next_button_url}")
+
+            # Close any previous drivers
+            if web_driver:
+                web_driver.quit()
+
+            # Recreate a new driver
+            web_driver = WebDriver(next_button_url, delay, dry_run)
+
+            # Extract openings and retrieve the container soup
+            container_soup = main_scraping_process(
+                web_driver=web_driver, filters=filters
+            )
+
+            # Find the next button pagination
+            next_button_url = retrieve_tag_href(
+                soup=container_soup, filter=filters["pagination_button"]
+            )
+
+        if len(OPENINGS) > 0:
+            # Log event
+            logging.info(
+                f"{len(OPENINGS)} openings obtained from source {di['SOURCE']}"
+            )
+
+            # Post to slack
+            post_to_slack(
+                blocks=block_info(
+                    message=f"`{len(OPENINGS)}` openings obtained from source `{di['SOURCE']}`"
+                ),
+                thread_ts=thread_ts,
+            )
+
+            # Verify if this is a dry run
+            if dry_run:
+                # Log event
+                logging.info("Dry run detected. No data will be saved.")
+
+                # Post to slack
+                post_to_slack(
+                    blocks=block_info(message="Script is running in `dry run` mode"),
+                    thread_ts=thread_ts,
+                )
+
+                # Log event
+                # logging.info(
+                #     f"{len(OPENINGS)} The following titles were obtained: {[str(o.title) for o in OPENINGS]}"
+                # )
+
+                # Export openings to json file
+                file_transact(openings=OPENINGS)
+
+                # ! Raise exception
+                raise Exception("Dry run completed. No data was saved.")
+
+            # Save openings to DB
+            db_transact(openings=OPENINGS)
+
+        # If web driver not empty, quit
         if web_driver:
             web_driver.quit()
 
-        # Recreate a new driver
-        web_driver = WebDriver(new_url, di["DELAY"], dry_run)
-
-        # Extract openings and retrieve the container soup
-        container_soup = main_scraping_process(web_driver=web_driver)
-
-        # Find the next button pagination
-        next_button = container_soup.select(di["FILTER_PAGINATION_BUTTON"])
-
-    if len(OPENINGS) > 0:
         # Log event
-        logging.info(
-            f"{len(OPENINGS)} openings obtained from recruiter {di['RECRUITER']}"
+        logging.info("Script completed successfully.")
+
+        # Post to slack
+        post_to_slack(blocks=block_completed(), thread_ts=thread_ts)
+
+    except DryRunException as dre:
+        # Log error
+        logging.error(f"Dry Run initiated: {dre}")
+
+        # Post to slack
+        post_to_slack(
+            blocks=block_error(error_message="Dry run completed."),
+            thread_ts=thread_ts,
         )
 
-        # Verify if this is a dry run
-        if dry_run:
-            # Log event
-            logging.info("Dry run detected. No data will be saved.")
+    except Exception as e:
+        # Log error
+        logging.error(f"Error occurred: {str(e)}")
 
-            # Log event
-            logging.info(
-                f"{len(OPENINGS)} Openings obtained: {[str(o) for o in OPENINGS]}"
-            )
-
-            # ! Raise exception
-            raise Exception("Dry run completed. No data was saved.")
-
-        # Create a new ItemDao object
-        item_dao = ItemDao()
-
-        # Log event
-        logging.info("Retrieving previous opening...")
-
-        # Retrieve the previous openings
-        previous_openings = item_dao.get_items_by_recruiter(recruiter=di["RECRUITER"])
-
-        # Log event
-        logging.info(
-            f"{len(previous_openings)} previous openings obtained from recruiter {di['RECRUITER']}"
-        )
-
-        # Clear the previous openings from that recruiter
-        item_dao.delete_all(openings=previous_openings)
-
-        # Log event
-        logging.info("Previous openings deleted")
-
-        # Save the new openings
-        item_dao.save_all(openings=OPENINGS)
-
-        # Log event
-        logging.info("New openings saved successfully")
-
-    # If web driver not empty, quit
-    if web_driver:
-        web_driver.quit()
-
-    # Log event
-    logging.info("Script completed successfully.")
+        # Post to slack
+        post_to_slack(blocks=block_error(error_message=str(e)), thread_ts=thread_ts)

@@ -3,6 +3,13 @@ from kink import di
 from functools import wraps
 from boto3 import Session
 from botocore.config import Config
+from dopplersdk import DopplerSDK
+from slack_sdk import WebClient
+from utils.constants import (
+    SECRETS_MAIN_PROJECT_NAME,
+    SECRETS_MAIN_CONFIG,
+    SECRETS_MAIN_SLACK_BOT_MAIN_TOKEN,
+)
 
 
 def main_injection(func):
@@ -12,18 +19,15 @@ def main_injection(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         # * DI for os variables
-        di["MAIN_URL"] = os.environ["MAIN_URL"]
-        di["CAREERS_URL"] = os.environ["CAREERS_URL"]
         di["DELAY"] = os.environ["DELAY"]
-        di["WRAPPER_FILTER"] = os.environ["WRAPPER_FILTER"]
-        di["OPENINGS_FILTER"] = os.environ["OPENINGS_FILTER"]
-        di["FILTERS_NAME"] = os.environ["FILTER_NAME"]
-        di["FILTER_POSTED_DATE"] = os.environ["FILTER_POSTED_DATE"]
-        di["FILTER_LINK"] = os.environ["FILTER_LINK"]
-        di["FILTER_PAGINATION_BUTTON"] = os.environ["FILTER_PAGINATION_BUTTON"]
-        di["RECRUITER"] = os.environ["RECRUITER"]
         di["AWS_REGION"] = os.environ["AWS_REGION"]
+        di["SECRETS_MAIN_TOKEN"] = os.environ["SECRETS_MAIN_TOKEN"]
+        di["SLACK_CHANNEL"] = os.environ["SLACK_CHANNEL"]
         di["dynamodb_table"] = os.environ["DB_TABLE_NAME"]
+        di["SOURCE"] = os.environ["SOURCE"]
+        di["SOURCE_URL"] = os.environ["SOURCE_URL"]
+        di["STARTUP_URL"] = os.environ["STARTUP_URL"]
+        di["DOMAIN"] = os.environ["DOMAIN"]
 
         # * Boto3 variables
         di["boto_config"] = Config(region_name=di["AWS_REGION"], signature_version="v4")
@@ -31,6 +35,20 @@ def main_injection(func):
         di["boto_dynamodb"] = __build_boto_client(
             client_name="dynamodb", config=di["boto_config"]
         )
+
+        # * Secrets manager Doppler
+        doppler = DopplerSDK()
+        doppler.set_access_token(di["SECRETS_MAIN_TOKEN"])
+
+        # * Get secrets
+        secrets = doppler.secrets.get(
+            project=SECRETS_MAIN_PROJECT_NAME,
+            config=SECRETS_MAIN_CONFIG,
+            name=SECRETS_MAIN_SLACK_BOT_MAIN_TOKEN,
+        )
+
+        # * Slack Sdk
+        di["slack_wc"] = WebClient(token=secrets.value["raw"])
 
         return func(*args, **kwargs)
 

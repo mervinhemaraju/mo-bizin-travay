@@ -161,3 +161,6 @@ cython_debug/
 
 # Env files
 *.env
+
+# Mo bisin travay json files
+mo-bizin-travay*.json
