@@ -12,9 +12,10 @@ locals {
 
   all_targets = [
     {
-      source            = "jobsmu",
-      source_url        = "https://www.jobs.mu/jobs",
-      source_url_suffix = "",
+      source      = "jobsmu",
+      domain      = "https://www.jobs.mu",
+      source_url  = "https://www.jobs.mu/jobs",
+      startup_url = "https://www.jobs.mu/jobs",
       filters = {
         "wrapper" : "div#wrapper",
         "openings" : "div.utf-listings-container-part.compact-list-layout a.utf-job-listing",
@@ -29,9 +30,10 @@ locals {
       }
     },
     {
-      source            = "myjobmu",
-      source_url        = "https://www.myjob.mu",
-      source_url_suffix = "/ShowResults.aspx?Keywords=&Location=&Category=&Recruiter=Company&Page=1",
+      source      = "myjobmu",
+      domain      = "https://www.myjob.mu",
+      source_url  = "https://www.myjob.mu",
+      startup_url = "https://www.myjob.mu/ShowResults.aspx?Keywords=&Location=&Category=&Recruiter=Company&Page=1",
       filters = {
         "wrapper" : "div#page",
         "openings" : "div.module.job-result",

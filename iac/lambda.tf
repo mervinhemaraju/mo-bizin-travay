@@ -36,7 +36,8 @@ module "openings_scraping" {
     DB_TABLE_NAME      = var.db_table_name
     SOURCE             = each.key
     SOURCE_URL         = each.value.source_url
-    SOURCE_URL_SUFFIX  = each.value.source_url_suffix
+    STARTUP_URL        = each.value.startup_url
+    DOMAIN             = each.value.domain
   }
 
   trusted_entities = [

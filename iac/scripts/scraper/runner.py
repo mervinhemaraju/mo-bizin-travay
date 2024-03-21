@@ -36,4 +36,4 @@ EVENT_MYJOB_MU = {
 }
 
 if __name__ == "__main__":
-    main(EVENT_JOBS_MU, CONTEXT)
+    main(EVENT_MYJOB_MU, CONTEXT)

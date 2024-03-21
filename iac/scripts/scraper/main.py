@@ -69,7 +69,7 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
             OPENINGS.append(
                 Opening(
                     id=link
-                    if di["SOURCE_URL"] in link
+                    if link.startswith(di["DOMAIN"])
                     else f"{di['SOURCE_URL']}{link}",
                     title=title,
                     posted_date=posted_date.strftime("%Y-%m-%d")
@@ -115,15 +115,8 @@ def main(event, context):
         delay = event["delay"] if "delay" in event else di["DELAY"]
         filters = event["filters"]
 
-        # Construct url
-        source_url = (
-            di["SOURCE_URL"]
-            if not di["SOURCE_URL_SUFFIX"]
-            else f"{di['SOURCE_URL']}{di['SOURCE_URL_SUFFIX']}"
-        )
-
         # Create the web driver
-        web_driver = WebDriver(source_url, delay, dry_run)
+        web_driver = WebDriver(di["STARTUP_URL"], delay, dry_run)
 
         # Extract openings and retrieve the container soup
         container_soup = main_scraping_process(web_driver=web_driver, filters=filters)
@@ -136,7 +129,7 @@ def main(event, context):
         # Verify if there is pagination
         while next_button_url is not None:
             # If partial url, add prefix
-            if di["SOURCE_URL"] not in next_button_url:
+            if di["DOMAIN"] not in next_button_url:
                 next_button_url = f"{di['SOURCE_URL']}{next_button_url}"
 
             # If the new url has already been visited
