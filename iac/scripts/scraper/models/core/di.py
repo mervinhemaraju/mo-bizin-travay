@@ -26,7 +26,6 @@ def main_injection(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # * Statics
         # * DI for os variables
         di["DELAY"] = os.environ["DELAY"]
         di["AWS_REGION"] = os.environ["AWS_REGION"]
@@ -88,6 +87,10 @@ def main_injection(func):
         di["db_password"] = database_secrets["MONGO_MAIN_MBT_PASSWORD"]["raw"]
         di["db_ca_file"] = FILE_PATH_CERT_CA
         di["db_cert_file"] = FILE_PATH_CERT_MONGOD
+
+        # * Process variables
+        di["opening_ids"] = []
+        di["visited_urls"] = []
 
         return func(*args, **kwargs)
 

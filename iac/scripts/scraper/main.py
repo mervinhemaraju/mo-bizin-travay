@@ -14,14 +14,14 @@ logging.getLogger().setLevel(logging.INFO)
 
 # Define empty list of openings
 OPENINGS: list[dict] = []
-OPENINGS_IDS: list[str] = []
-VISITED_URLS: list[str] = []
+# OPENINGS_IDS: list[str] = []
+# VISITED_URLS: list[str] = []
 
 
 # Other Functions
 def main_scraping_process(web_driver: WebDriver, filters: dict):
-    # Define global vars
-    global OPENINGS, OPENINGS_IDS
+    # # Define global vars
+    # global OPENINGS, OPENINGS_IDS
 
     # Log event
     logging.info("Starting scraping process. Retrieving openings...")
@@ -60,9 +60,9 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
             continue
 
         # Verify if link is already present
-        if link not in OPENINGS_IDS:
+        if link not in di["opening_ids"]:
             # Append the opening id to the list
-            OPENINGS_IDS.append(link)
+            di["opening_ids"].append(link)
 
             # Append opening to the list
             OPENINGS.append(
@@ -90,12 +90,13 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
 @main_injection
 def main(event, context):
     # Define global vars
-    global OPENINGS, OPENINGS_IDS, VISITED_URLS
+    global OPENINGS
+    # , OPENINGS_IDS, VISITED_URLS
 
     # Clear vars before starting
     OPENINGS.clear()
-    OPENINGS_IDS.clear()
-    VISITED_URLS.clear()
+    # OPENINGS_IDS.clear()
+    # VISITED_URLS.clear()
 
     # Post message to slack
     _, thread_ts = post_to_slack(
@@ -132,7 +133,7 @@ def main(event, context):
             # If the new url has already been visited
             # break the loop as the pagination has
             # started all over again
-            if next_button_url in VISITED_URLS:
+            if next_button_url in di["visited_urls"]:
                 # Log event
                 logging.warn(
                     "Pagination has looped back to the first page. Breaking the loop."
@@ -142,7 +143,7 @@ def main(event, context):
                 break
 
             # Add URL to the visited URL
-            VISITED_URLS.append(next_button_url)
+            di["visited_urls"].append(next_button_url)
 
             # Log event
             logging.info(f"Pagination found on url {next_button_url}")
