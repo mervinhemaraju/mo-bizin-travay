@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from kink import inject
+from datetime import datetime
 
 
 @inject
@@ -23,9 +24,6 @@ class Dao:
 
         # Retrieve the collection openings
         self.collection = db["openings"]
-
-    def save(self, document: dict):
-        self.collection.insert_one(document)
 
     def save_all(self, documents: list[dict]):
         self.collection.insert_many(documents)

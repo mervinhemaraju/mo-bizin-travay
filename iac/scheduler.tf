@@ -10,7 +10,7 @@ resource "aws_scheduler_schedule" "lambda_scheduler" {
   description         = "The schedule for ${local.lambda.prefix_name}-${lower(each.key)}"
   group_name          = aws_scheduler_schedule_group.lambda_trigger.name
   schedule_expression = "rate(4 days)"
-  state               = "ENABLED"
+  state               = each.value.status
 
   flexible_time_window {
     mode = "OFF"

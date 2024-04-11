@@ -4,7 +4,7 @@ from kink import di
 from models.db.dao import Dao
 
 
-def post_to_slack(blocks, thread_ts=None, channel=None, text=None):
+def post_to_slack(blocks, thread_ts=None, channel=None, text="`mo-bizin-travay`"):
     # * Posts the message to slack
     response = di["slack_wc"].chat_postMessage(
         channel=di["SLACK_CHANNEL"] if channel is None else channel,
@@ -22,7 +22,7 @@ def file_transact(openings: list):
         json_file.write(json.dumps([opening for opening in openings]))
 
 
-def db_transact(openings: list):
+def db_transact(openings: list[dict]):
     # Create a new Dao object
     dao = Dao()
 

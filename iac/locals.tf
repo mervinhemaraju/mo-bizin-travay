@@ -12,6 +12,7 @@ locals {
 
   all_targets = [
     {
+      status      = "ENABLED"
       source      = "jobsmu",
       domain      = "https://www.jobs.mu",
       source_url  = "https://www.jobs.mu/jobs",
@@ -30,6 +31,7 @@ locals {
       }
     },
     {
+      status      = "DISABLED"
       source      = "myjobmu",
       domain      = "https://www.myjob.mu",
       source_url  = "https://www.myjob.mu",
@@ -48,6 +50,7 @@ locals {
       }
     },
     {
+      status      = "ENABLED"
       source      = "mcbmu",
       domain      = "https://ekbd.fa.em2.oraclecloud.com",
       source_url  = "https://ekbd.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions?",
