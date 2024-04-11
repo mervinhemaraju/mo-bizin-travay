@@ -33,7 +33,7 @@ def db_transact(openings: list):
     logging.info(f"{count} previous openings deleted from source {di['SOURCE']}")
 
     # Save the new openings
-    dao.insert_all(documents=openings)
+    dao.save_all(documents=openings)
 
     # Log event
     logging.info("New openings saved successfully")

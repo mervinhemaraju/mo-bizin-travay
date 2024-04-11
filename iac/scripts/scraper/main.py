@@ -79,6 +79,7 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
                     "salary_range": salary_range,
                     "updated_at": datetime.now().strftime("%Y-%m-%d"),
                     "opening_source": di["SOURCE"],
+                    "link": link,
                 }
             )
 
