@@ -24,7 +24,10 @@ class Dao:
         # Retrieve the collection openings
         self.collection = db["openings"]
 
-    def insert_all(self, documents: dict):
+    def save(self, document: dict):
+        self.collection.insert_one(document)
+
+    def save_all(self, documents: list[dict]):
         self.collection.insert_many(documents)
 
     def delete_by_source(self, opening_source):

@@ -46,6 +46,24 @@ locals {
         "link" : "div.module-content div.job-result-logo-title div.job-result-title h2 a",
         "pagination_button" : "ul#pagination li:last-child a",
       }
+    },
+    {
+      source      = "mcbmu",
+      domain      = "https://ekbd.fa.em2.oraclecloud.com",
+      source_url  = "https://ekbd.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions?",
+      startup_url = "https://ekbd.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/requisitions?",
+      filters = {
+        "wrapper" : "div.search-results-jobs-list.jobs-list",
+        "openings" : "div.job-tile.job-list-item",
+        "name" : "div.job-tile.job-list-item span.job-tile__title",
+        "posted_date" : "div.job-tile__subheader span i18n span span",
+        "closing_date" : "na",
+        "recruiter" : "na",
+        "salary_range" : "na",
+        "location" : "na",
+        "link" : "div.job-tile.job-list-item a.job-list-item__link",
+        "pagination_button" : "na",
+      }
     }
   ]
 

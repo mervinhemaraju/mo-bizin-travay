@@ -26,17 +26,6 @@ def db_transact(openings: list):
     # Create a new Dao object
     dao = Dao()
 
-    # # Log event
-    # logging.info("Retrieving previous openings...")
-
-    # # Retrieve the previous openings
-    # previous_openings = dao.fetch_by_source(opening_source=di["SOURCE"])
-
-    # # Log event
-    # logging.info(
-    #     f"{len(previous_openings)} previous openings obtained from recruiter {di['SOURCE']}"
-    # )
-
     # Clear the previous openings from that recruiter
     count = dao.delete_by_source(opening_source=di["SOURCE"])
 

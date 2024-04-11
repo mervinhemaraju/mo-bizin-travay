@@ -36,5 +36,21 @@ EVENT_MYJOB_MU = {
 }
 
 
+EVENT_MCB_MU = {
+    "dry_run": True,
+    "filters": {
+        "wrapper": "div.search-results-jobs-list.jobs-list",
+        "openings": "div.job-tile.job-list-item",
+        "name": "div.job-tile.job-list-item span.job-tile__title",
+        "posted_date": "div.job-tile__subheader span i18n span span",
+        "closing_date": "na",
+        "recruiter": "MCB",
+        "salary_range": "na",
+        "location": "na",
+        "link": "div.job-tile.job-list-item a.job-list-item__link",
+        "pagination_button": "na",
+    },
+}
+
 if __name__ == "__main__":
-    main(EVENT_JOBS_MU, CONTEXT)
+    main(EVENT_MCB_MU, CONTEXT)
