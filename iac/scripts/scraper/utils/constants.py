@@ -6,4 +6,4 @@ SECRETS_DS_PROJECT_NAME = "database-secrets"
 SECRETS_DS_CONFIG = "prd"
 
 FILE_PATH_CERT_CA = "/tmp/ca.pem"
-FILE_PATH_CERT_MONGOD = "/tmp/ca.pem"
+FILE_PATH_CERT_MONGOD = "/tmp/mongod.pem"
