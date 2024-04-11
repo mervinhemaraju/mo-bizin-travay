@@ -1,7 +1,7 @@
 import json
 import logging
 from kink import di
-from models.db.opening_dao import ItemDao
+from models.db.dao import Dao
 
 
 def post_to_slack(blocks, thread_ts=None, channel=None, text=None):
@@ -19,32 +19,32 @@ def post_to_slack(blocks, thread_ts=None, channel=None, text=None):
 
 def file_transact(openings: list):
     with open(f"mo-bizin-travay-{di['SOURCE'].lower()}.json", "w") as json_file:
-        json_file.write(json.dumps([vars(opening) for opening in openings]))
+        json_file.write(json.dumps([opening for opening in openings]))
 
 
 def db_transact(openings: list):
-    # Create a new ItemDao object
-    item_dao = ItemDao()
+    # Create a new Dao object
+    dao = Dao()
 
-    # Log event
-    logging.info("Retrieving previous openings...")
+    # # Log event
+    # logging.info("Retrieving previous openings...")
 
-    # Retrieve the previous openings
-    previous_openings = item_dao.get_items_by_source(source=di["SOURCE"])
+    # # Retrieve the previous openings
+    # previous_openings = dao.fetch_by_source(opening_source=di["SOURCE"])
 
-    # Log event
-    logging.info(
-        f"{len(previous_openings)} previous openings obtained from recruiter {di['SOURCE']}"
-    )
+    # # Log event
+    # logging.info(
+    #     f"{len(previous_openings)} previous openings obtained from recruiter {di['SOURCE']}"
+    # )
 
     # Clear the previous openings from that recruiter
-    item_dao.delete_all(openings=previous_openings)
+    count = dao.delete_by_source(opening_source=di["SOURCE"])
 
     # Log event
-    logging.info("Previous openings deleted")
+    logging.info(f"{count} previous openings deleted from source {di['SOURCE']}")
 
     # Save the new openings
-    item_dao.save_all(openings=openings)
+    dao.insert_all(documents=openings)
 
     # Log event
     logging.info("New openings saved successfully")

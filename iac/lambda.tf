@@ -30,14 +30,15 @@ module "openings_scraping" {
   image_uri      = data.aws_ecr_image.mobizintravay.image_uri
 
   environment_variables = {
-    DELAY              = 15
-    SECRETS_MAIN_TOKEN = var.token_doppler_iac_cloud_main
-    SLACK_CHANNEL      = var.slack_channel
-    DB_TABLE_NAME      = var.db_table_name
-    SOURCE             = each.key
-    SOURCE_URL         = each.value.source_url
-    STARTUP_URL        = each.value.startup_url
-    DOMAIN             = each.value.domain
+    DELAY                         = 15
+    SECRETS_CLOUD_IAC_TOKEN       = var.token_doppler_iac_cloud_main
+    SECRETS_DATABASE_ACCESS_TOKEN = var.token_doppler_database_secrets
+    DB_HOST                       = var.sm_mongo_host
+    SLACK_CHANNEL                 = var.slack_channel
+    SOURCE                        = each.key
+    SOURCE_URL                    = each.value.source_url
+    STARTUP_URL                   = each.value.startup_url
+    DOMAIN                        = each.value.domain
   }
 
   trusted_entities = [

@@ -21,3 +21,13 @@ variable "token_doppler_iac_cloud_main" {
   type        = string
   description = "The token for secrets manager Doppler main project."
 }
+
+variable "token_doppler_database_secrets" {
+  type        = string
+  description = "The token for secrets manager Doppler database secrets."
+}
+
+variable "sm_mongo_host" {
+  type        = string
+  description = "The self managed MongoDB host."
+}

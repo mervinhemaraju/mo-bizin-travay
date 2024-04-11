@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from models.core.web_driver import WebDriver
 from models.core.di import main_injection
 from models.core.exceptions import DryRunException
-from models.db.opening import Opening
 from utils.functions import post_to_slack, file_transact, db_transact
 from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
 from utils.slack_blocks import block_completed, block_error, block_info
@@ -14,7 +13,7 @@ from utils.slack_blocks import block_completed, block_error, block_info
 logging.getLogger().setLevel(logging.INFO)
 
 # Define empty list of openings
-OPENINGS: list[Opening] = []
+OPENINGS: list[dict] = []
 OPENINGS_IDS: list[str] = []
 VISITED_URLS: list[str] = []
 
@@ -67,23 +66,37 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
 
             # Append opening to the list
             OPENINGS.append(
-                Opening(
-                    id=link
-                    if link.startswith(di["DOMAIN"])
-                    else f"{di['SOURCE_URL']}{link}",
-                    title=title,
-                    posted_date=posted_date.strftime("%Y-%m-%d")
+                {
+                    "title": title,
+                    "posted_date": posted_date.strftime("%Y-%m-%d")
                     if posted_date
                     else "N/A",
-                    closing_date=closing_date.strftime("%Y-%m-%d")
+                    "closing_date": closing_date.strftime("%Y-%m-%d")
                     if closing_date
                     else "N/A",
-                    recruiter=recruiter,
-                    location=location,
-                    salary_range=salary_range,
-                    updated_at=datetime.now().strftime("%Y-%m-%d"),
-                    opening_source=di["SOURCE"],
-                )
+                    "recruiter": recruiter,
+                    "location": location,
+                    "salary_range": salary_range,
+                    "updated_at": datetime.now().strftime("%Y-%m-%d"),
+                    "opening_source": di["SOURCE"],
+                }
+                # Opening(
+                #     id=link
+                #     if link.startswith(di["DOMAIN"])
+                #     else f"{di['SOURCE_URL']}{link}",
+                #     title=title,
+                #     posted_date=posted_date.strftime("%Y-%m-%d")
+                #     if posted_date
+                #     else "N/A",
+                #     closing_date=closing_date.strftime("%Y-%m-%d")
+                #     if closing_date
+                #     else "N/A",
+                #     recruiter=recruiter,
+                #     location=location,
+                #     salary_range=salary_range,
+                #     updated_at=datetime.now().strftime("%Y-%m-%d"),
+                #     opening_source=di["SOURCE"],
+                # )
             )
 
     # Return the soup for the main container
