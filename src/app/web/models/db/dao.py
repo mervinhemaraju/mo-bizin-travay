@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from kink import inject
+from math import ceil
 
 
 @inject
@@ -33,11 +34,13 @@ class Dao:
     def get_paginated_data(self, page, query):
         skip = (page - 1) * self.PER_PAGE
         regex = {"$regex": query, "$options": "i"}  # case-insensitive
+        query_filter = {"$or": [{"title": regex}, {"opening_source": regex}]}
         data = (
             # self.collection.find({"$text": {"$search": f"/.*{query}/"}})
             # self.collection.find({"title": {"$regex": query}})
-            self.collection.find({"$or": [{"title": regex}, {"opening_source": regex}]})
-            .skip(skip)
-            .limit(self.PER_PAGE)
+            self.collection.find(query_filter).skip(skip).limit(self.PER_PAGE)
         )
-        return list(data)
+        total_documents = self.collection.count_documents(query_filter)
+        total_pages = ceil(total_documents / self.PER_PAGE)
+
+        return list(data), total_pages, total_documents

@@ -36,10 +36,11 @@ Mo Bizin Travay
                 </div> -->
             <div class="position-relative mb-5">
 
-                <form action="{{ url_for('web.search') }}" method="GET" role="form">
+                <form action="{{ url_for('web.search') }}" id="searchForm" method="GET" role="form"
+                    onsubmit="loadSpinners()">
                     <input type="text"
                         class="form-control form-control-lg rounded-pill px-4 mybox mbt-textboxes-primary"
-                        aria-label="Search" name="search" id="search">
+                        aria-label="Search" name="query" id="query">
                     <i class="bi bi-search mbt-icons position-absolute"
                         style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
                 </form>
