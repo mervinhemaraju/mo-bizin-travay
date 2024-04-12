@@ -1,6 +1,8 @@
 from pymongo import MongoClient
+from kink import inject
 
 
+@inject
 class Dao:
     # Pagination
     PER_PAGE = 10
@@ -25,7 +27,17 @@ class Dao:
         # Retrieve the collection openings
         self.collection = db["openings"]
 
-    def get_paginated_data(self, page):
+        # Create a text index on the title and opening source fields
+        self.collection.create_index([("title", "text"), ("opening_source", "text")])
+
+    def get_paginated_data(self, page, query):
         skip = (page - 1) * self.PER_PAGE
-        data = self.collection.find().skip(skip).limit(self.PER_PAGE)
+        regex = {"$regex": query, "$options": "i"}  # case-insensitive
+        data = (
+            # self.collection.find({"$text": {"$search": f"/.*{query}/"}})
+            # self.collection.find({"title": {"$regex": query}})
+            self.collection.find({"$or": [{"title": regex}, {"opening_source": regex}]})
+            .skip(skip)
+            .limit(self.PER_PAGE)
+        )
         return list(data)

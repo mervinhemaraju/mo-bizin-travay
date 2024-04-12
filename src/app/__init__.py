@@ -1,11 +1,11 @@
-from flask import Flask, redirect, url_for
+from flask import redirect, url_for
+from app.web.models.core.mbt import Mbt
 from app.web.web import web
 
 # * Create a Flask Application
-app = Flask(__name__)
+app = Mbt()
 
 # * Register Blueprints
-
 # > Web App Blueprints
 app.register_blueprint(web, url_prefix="/home")
 

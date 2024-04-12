@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template as HTML, request, current_app
+from flask import Blueprint, render_template as HTML, request
 from app.web.models.db.dao import Dao
+from kink import di
 
 # * Create the web blueprint
 web = Blueprint("web", __name__, static_folder="static", template_folder="templates")
@@ -16,6 +17,8 @@ def search():
     # Get the query
     query = request.args.get("search", "")
 
+    print(f"wuer: {query}")
+
     # Get current page from query parameters, default to 1
     page = int(request.args.get("page", 1))
 
@@ -23,7 +26,7 @@ def search():
     dao = Dao()
 
     # Get data for the current page
-    data = dao.get_paginated_data(page)
+    data = dao.get_paginated_data(page=page, query=query)
     # data = [
     #     {
     #         "title": "Operational Risk Analyst | Risk SBU | April 2024",

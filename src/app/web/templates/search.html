@@ -12,17 +12,17 @@ Mo Bizin Travay
 {% block body %}
 
 <div style="background-color: rgb(240, 240, 240); padding-bottom: 5%;">
+
     <div class="container mt-5">
 
         <div class="row">
-
             <div class="col-md-6 mx-auto text-center">
                 <div class="position-relative mb-3">
 
                     <form action="{{ url_for('web.search') }}" method="GET" role="form">
                         <input type="text"
                             class="form-control form-control-lg rounded-pill px-4 mybox mbt-textboxes-primary"
-                            aria-label="Search" name="query" id="query" value="{{ query }}">
+                            aria-label="Search" name="search" id="search" value="{{ query }}">
                         <i class="bi bi-search mbt-icons position-absolute"
                             style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
                     </form>
@@ -31,6 +31,20 @@ Mo Bizin Travay
                 <h6 class="mb-5">
                     You searched for: {{ query }}
                 </h6>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6 mx-auto">
+                <h6 class="left-align">
+                    {{ data|length }} "{{ query }}" jobs
+                </h6>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6 mx-auto text-center">
 
                 {% for item in data %}
 
@@ -40,7 +54,8 @@ Mo Bizin Travay
                         <p class="card-text text-muted mt-2">Posted on
                             {{ item["posted_date"] }}
                         </p>
-                        <a href="#" class="btn mbt-button-primary rounded-pill mt-3">Apply Job</a>
+                        <a href="{{ item['link'] }}" target="_blank"
+                            class="btn mbt-button-primary rounded-pill mt-3">Apply Job</a>
                     </div>
                     <div class="card-footer text-muted">
                         Posted by <b>{{ item["opening_source"] | upper }}</b>
