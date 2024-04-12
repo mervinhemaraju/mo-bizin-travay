@@ -1,0 +1,58 @@
+/* Color Palettes */
+:root {
+    --color-background-primary: #e9ddff;
+    --color-onbackground-primary: #e0d0ff;
+    --color-accent-primary: #4f378a;
+    --color-text-primary: #381e72;
+    --color-icon-primary: #381e72;
+}
+
+/* Reuseables */
+.mbt-textboxes-primary {
+    text-indent: 28px;
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+}
+
+.mbt-button-primary {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-accent-primary);
+}
+
+.mbt-icons {
+    color: var(--color-icon-primary)
+}
+
+.mbt-textboxes-primary:focus {
+    background-color: var(--color-onbackground-primary);
+}
+
+.mbt-button-primary:hover {
+    background-color: var(--color-onbackground-primary);
+}
+
+/* Top Level */
+body {
+    background-color: var(--color-background-primary);
+}
+
+/* Main Page */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--color-text-primary)
+}
+
+.main-spacer {
+    margin-top: 12%;
+}
+
+.accent {
+    background-color: var(--color-onbackground-primary);
+}

@@ -1,0 +1,54 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Mo Bizin Travay
+{% endblock %}
+
+{% block meta %}
+<meta content="mo bizin travay" name="description">
+<meta content="mo bizin travay" name="keywords">
+{% endblock %}
+
+{% block body %}
+
+<div class="container main-spacer">
+
+    <div class="row">
+
+        <div class="col-md-6 mx-auto text-center">
+
+            <h1 class="mb-5">
+                MO BIZIN TRAVAY
+            </h1>
+
+            <!-- <div class="position-relative">
+                    <input type="text" class="form-control form-control-lg rounded-pill pl-4" aria-label="Search">
+                    <i class="bi bi-search position-absolute"
+                        style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                </div> -->
+            <div class="position-relative mb-5">
+
+                <form action="{{ url_for('web.search') }}" method="GET" role="form">
+                    <input type="text"
+                        class="form-control form-control-lg rounded-pill px-4 mybox mbt-textboxes-primary"
+                        aria-label="Search" name="query" id="query">
+                    <i class="bi bi-search mbt-icons position-absolute"
+                        style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                </form>
+            </div>
+
+            <p>
+                Welcome to Mo Bizin Travay, your one-stop destination for job opportunities in Mauritius.
+            </p>
+
+            <div class="d-grid gap-2 col-6 mx-auto mt-5">
+                <button class="btn mbt-button-primary rounded-pill" type="button">View all jobs</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
