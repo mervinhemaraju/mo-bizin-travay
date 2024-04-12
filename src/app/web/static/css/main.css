@@ -1,13 +1,21 @@
 /* Color Palettes */
 :root {
-    --color-background-primary: #e9ddff;
-    --color-onbackground-primary: #e0d0ff;
-    --color-accent-primary: #4f378a;
-    --color-text-primary: #381e72;
+    --color-background-primary: #ffffff;
+    --color-onbackground-primary: #ffffff;
+    --color-accent-primary: #9c7fe4;
+    --color-accent-secondary: #6a53a4;
+    --color-onsurface-primary: #ffffff;
+    --color-titles-primary: #381e72;
     --color-icon-primary: #381e72;
+    --color-icon-secondary: #ffffff;
+    --color-surface-disabled: #969696;
 }
 
 /* Reuseables */
+.mbt-text-chewy {
+    font-family: 'Chewy', cursive;
+}
+
 .mbt-textboxes-primary {
     text-indent: 28px;
     background-color: transparent;
@@ -16,8 +24,8 @@
 }
 
 .mbt-button-primary {
-    background-color: transparent;
-    color: var(--color-text-primary);
+    background-color: var(--color-accent-primary);
+    color: var(--color-onsurface-primary);
     border-color: var(--color-accent-primary);
 }
 
@@ -30,7 +38,29 @@
 }
 
 .mbt-button-primary:hover {
+    background-color: var(--color-accent-secondary);
+    color: var(--color-onsurface-primary);
+}
+
+.mbt-icon-button {
+    background-color: var(--color-accent-primary);
+    color: var(--color-onsurface-primary);
+    padding: 12px;
+}
+
+
+.mbt-icon-button:hover {
+    background-color: var(--color-accent-secondary);
+    color: var(--color-onsurface-primary);
+}
+
+.card-footer,
+.card-body {
     background-color: var(--color-onbackground-primary);
+}
+
+.pe-none {
+    background-color: var(--color-surface-disabled);
 }
 
 /* Top Level */
@@ -46,11 +76,11 @@ h3,
 h4,
 h5,
 h6 {
-    color: var(--color-text-primary)
+    color: var(--color-titles-primary)
 }
 
 .main-spacer {
-    margin-top: 12%;
+    margin-top: 6%;
 }
 
 .accent {

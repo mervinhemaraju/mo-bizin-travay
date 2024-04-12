@@ -11,31 +11,69 @@ Mo Bizin Travay
 
 {% block body %}
 
-<div class="container mt-5">
+<div style="background-color: rgb(240, 240, 240); padding-bottom: 5%;">
+    <div class="container mt-5">
 
-    <div class="row">
+        <div class="row">
 
-        <div class="col-md-6 mx-auto text-center">
+            <div class="col-md-6 mx-auto text-center">
+                <div class="position-relative mb-3">
 
-            <h1 class="mb-5">
-                Search: {{ query }}
-            </h1>
-
-            <div class="card">
-                <div class="card-header">
-                    Featured
+                    <form action="{{ url_for('web.search') }}" method="GET" role="form">
+                        <input type="text"
+                            class="form-control form-control-lg rounded-pill px-4 mybox mbt-textboxes-primary"
+                            aria-label="Search" name="query" id="query" value="{{ query }}">
+                        <i class="bi bi-search mbt-icons position-absolute"
+                            style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                    </form>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+
+                <h6 class="mb-5">
+                    You searched for: {{ query }}
+                </h6>
+
+                {% for item in data %}
+
+                <div class="card mb-5 rounded-pill">
+                    <div class="card-body p-4">
+                        <h5 class="card-title">{{ item["title"] }}</h5>
+                        <p class="card-text text-muted mt-2">Posted on
+                            {{ item["posted_date"] }}
+                        </p>
+                        <a href="#" class="btn mbt-button-primary rounded-pill mt-3">Apply Job</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Posted by <b>{{ item["opening_source"] | upper }}</b>
+                    </div>
                 </div>
+                {% endfor %}
+
+                <!-- {% if page > 1 %}
+                <a href="{{ url_for('web.search', page=page-1, per_page=per_page) }}"
+                    style="color: darkblue;">Previous</a>
+                {% endif %}
+
+                {% if data|length == per_page %}
+                <a href="{{ url_for('web.search', page=page+1, per_page=per_page) }}"
+                    class="mbt-icon-button rounded-pill">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                {% endif %} -->
+
+                <a href="{{ url_for('web.search', page=page+1, per_page=per_page) }}"
+                    class="mbt-icon-button rounded-pill mx-2 pe-none" disabled>
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+
+                <a href="{{ url_for('web.search', page=page+1, per_page=per_page) }}"
+                    class="mbt-icon-button rounded-pill mx-2">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
 
         </div>
 
     </div>
-
 </div>
 
 {% endblock %}

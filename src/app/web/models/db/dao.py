@@ -28,4 +28,4 @@ class Dao:
     def get_paginated_data(self, page):
         skip = (page - 1) * self.PER_PAGE
         data = self.collection.find().skip(skip).limit(self.PER_PAGE)
-        return data
+        return list(data)
