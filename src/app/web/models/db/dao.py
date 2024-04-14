@@ -23,7 +23,7 @@ class Dao:
         )
 
         # Retrieve the mbt db
-        db = mongo["mo-bizin-travay"]
+        db = mongo["mobizintravay"]
 
         # Retrieve the collection openings
         self.collection = db["openings"]
