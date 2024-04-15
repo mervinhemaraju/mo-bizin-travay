@@ -47,15 +47,59 @@ Mo Bizin Travay
 
             {% for item in data %}
 
+            <!-- Opening card -->
             <div class="card mb-5 rounded shadow-sm">
+
+                <!-- Card body -->
                 <div class="card-body p-4">
-                    <h5 class="card-title">{{ item["title"] }}</h5>
-                    <p class="card-text text-muted mt-2">Posted on
-                        {{ item["posted_date"] }}
-                    </p>
+
+                    <!--  Card title -->
+                    <h3 class="card-title">{{ item["title"] }}</h3>
+
+                    <!-- Card Sub text -->
+                    <div class="d-flex justify-content-center mt-3 mb-3" style="font-size:medium;">
+                        <p class="card-text text-muted">Posted on
+                            {{ item["posted_date"] }}
+                        </p>
+                    </div>
+
+                    {% if item["closing_date"] is not none %}
+                    <!-- Card Sub text -->
+                    <div class="d-flex justify-content-center" style="font-size:small;">
+                        <p class="card-text text-muted">Closing on
+                            <b>{{ item["closing_date"] }}</b>
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!--  Optional card views -->
+                    <div class="d-flex justify-content-center mt-5 mb-4">
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-currency-dollar"></i>
+                            </span>
+                            {{ item["salary_range"] }}
+                        </button>
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-pin-map"></i>
+                            </span>
+                            {{ item["location"] }}
+                        </button>
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-briefcase"></i>
+                            </span>
+                            {{ item["recruiter"] }}
+                        </button>
+                    </div>
+
+                    <!-- Card apply button -->
                     <a href="{{ item['link'] }}" target="_blank"
-                        class="btn mbt-button-primary rounded-pill mt-3">Apply Job</a>
+                        class="btn mbt-button-primary rounded-pill">Apply Job</a>
                 </div>
+
+                <!-- Card footer -->
                 <div class="card-footer text-muted">
                     Posted by <b>{{ item["opening_source"] | upper }}</b>
                 </div>

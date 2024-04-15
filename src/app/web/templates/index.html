@@ -46,12 +46,14 @@ Mo Bizin Travay
                 </form>
             </div>
 
-            <p>
+            <h6>
                 Welcome to Mo Bizin Travay, your one-stop destination for job opportunities in Mauritius.
-            </p>
+            </h6>
 
             <div class="d-grid gap-2 col-6 mx-auto mt-5">
-                <button class="btn mbt-button-primary rounded-pill" type="button">View all jobs</button>
+                <a href="{{ url_for('web.search') }}" class="btn mbt-button-primary rounded-pill"
+                    type="button">View all
+                    jobs</a>
             </div>
 
         </div>

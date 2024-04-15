@@ -3,6 +3,7 @@
     --color-background-primary: #ffffff;
     --color-onbackground-primary: #ffffff;
     --color-accent-primary: #9c7fe4;
+    --color-accent-fade: #dfd3ffe6;
     --color-accent-secondary: #6a53a4;
     --color-onsurface-primary: #ffffff;
     --color-titles-primary: #381e72;
@@ -12,6 +13,16 @@
 }
 
 /* Reuseables */
+.mbt-pills {
+    background-color: var(--color-accent-fade);
+    border: var(--color-accent-fade);
+    color: var(--color-titles-primary);
+}
+
+.mbt-pills span {
+    background-color: var(--color-titles-primary);
+}
+
 .mbt-text-chewy {
     font-family: 'Chewy', cursive;
 }
