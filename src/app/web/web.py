@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, render_template as HTML, request
-from app.web.models.db.dao import Dao
+from app.web.models.services.mongoapi import MongoAPI
 from kink import di
 
 # * Create the web blueprint
@@ -21,11 +21,11 @@ def search():
     # Get current page from query parameters, default to 1
     page = int(request.args.get("page", 1))
 
-    # Create dao object
-    dao = Dao()
+    # Create the api object
+    api = MongoAPI()
 
     # Get data for the current page
-    data, total_pages, total_documents = dao.get_paginated_data(page=page, query=query)
+    data, total_pages, total_documents = api.get_paginated_data(page=page, query=query)
 
     # data, total_pages, total_documents = (
     #     [
@@ -45,7 +45,7 @@ def search():
     #     0,
     # )
 
-    accumulated_jobs = min(page * dao.PER_PAGE, total_documents)
+    accumulated_jobs = min(page * 10, total_documents)
 
     return HTML(
         "search.html",

@@ -27,7 +27,7 @@ variable "token_doppler_database_secrets" {
   description = "The token for secrets manager Doppler database secrets."
 }
 
-variable "sm_mongo_host" {
+variable "mongoapi_domain" {
   type        = string
-  description = "The self managed MongoDB host."
+  description = "The Mongo API domain"
 }

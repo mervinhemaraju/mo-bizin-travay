@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from models.core.web_driver import WebDriver
 from models.core.di import main_injection
 from models.core.exceptions import DryRunException
-from models.db.dao import Dao
 from utils.functions import post_to_slack, file_transact, db_transact
 from utils.extractors import retrieve_tag_href, retrieve_tag_text, retrieve_date
 from utils.slack_blocks import block_completed, block_error, block_info
@@ -65,10 +64,10 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
                 "title": title,
                 "posted_date": posted_date.strftime("%Y-%m-%d")
                 if posted_date
-                else "N/A",
+                else None,
                 "closing_date": closing_date.strftime("%Y-%m-%d")
                 if closing_date
-                else "N/A",
+                else None,
                 "recruiter": recruiter,
                 "location": location,
                 "salary_range": salary_range,
@@ -198,7 +197,7 @@ def main(event, context):
             file_transact(openings=openings)
 
             # ! Raise exception
-            raise Exception("Dry run completed. No data was saved.")
+            # raise Exception("Dry run completed. No data was saved.")
 
         # Save openings to DB
         db_transact(openings)

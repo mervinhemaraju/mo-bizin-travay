@@ -33,7 +33,7 @@ module "openings_scraping" {
     DELAY                         = 15
     SECRETS_CLOUD_IAC_TOKEN       = var.token_doppler_iac_cloud_main
     SECRETS_DATABASE_ACCESS_TOKEN = var.token_doppler_database_secrets
-    DB_HOST                       = var.sm_mongo_host
+    MONGOAPI_DOMAIN               = var.mongoapi_domain
     SLACK_CHANNEL                 = var.slack_channel
     SOURCE                        = each.key
     SOURCE_URL                    = each.value.source_url

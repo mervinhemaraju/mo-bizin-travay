@@ -11,18 +11,12 @@ from utils.constants import (
     SECRETS_CIM_SLACK_BOT_MAIN_TOKEN,
     SECRETS_DS_CONFIG,
     SECRETS_DS_PROJECT_NAME,
-    FILE_PATH_CERT_MONGOD,
-    FILE_PATH_CERT_CA,
 )
 
 
 def main_injection(func):
     def __build_boto_client(client_name, config):
         return Session().client(service_name=client_name, config=config)
-
-    def create_certificate_file(content, file_location):
-        with open(file_location, "w") as file:
-            file.write(content)
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -33,7 +27,7 @@ def main_injection(func):
         di["SECRETS_DATABASE_ACCESS_TOKEN"] = os.environ[
             "SECRETS_DATABASE_ACCESS_TOKEN"
         ]
-        di["DB_HOST"] = os.environ["DB_HOST"]
+        di["MONGOAPI_DOMAIN"] = os.environ["MONGOAPI_DOMAIN"]
         di["SLACK_CHANNEL"] = os.environ["SLACK_CHANNEL"]
         di["SOURCE"] = os.environ["SOURCE"]
         di["SOURCE_URL"] = os.environ["SOURCE_URL"]
@@ -69,24 +63,12 @@ def main_injection(func):
             ).value["raw"]
         )
 
-        # * Create the ca file
-        create_certificate_file(
-            content=database_secrets["MONGO_CERT_CA"]["raw"],
-            file_location=FILE_PATH_CERT_CA,
-        )
-
-        # * Create the mongod file
-        create_certificate_file(
-            content=database_secrets["MONGO_CERT_MONGOD"]["raw"],
-            file_location=FILE_PATH_CERT_MONGOD,
-        )
-
         # * Database variables
-        di["db_host"] = di["DB_HOST"]
-        di["db_username"] = database_secrets["MONGO_MAIN_MBT_USERNAME"]["raw"]
-        di["db_password"] = database_secrets["MONGO_MAIN_MBT_PASSWORD"]["raw"]
-        di["db_ca_file"] = FILE_PATH_CERT_CA
-        di["db_cert_file"] = FILE_PATH_CERT_MONGOD
+        di["api_base_url"] = (
+            f"https://{di['MONGOAPI_DOMAIN']}/api/v1/mobizintravay/openings"
+        )
+        di["api_username"] = database_secrets["MONGO_MAIN_MBT_USERNAME"]["raw"]
+        di["api_password"] = database_secrets["MONGO_MAIN_MBT_PASSWORD"]["raw"]
 
         # * Process variables
         di["opening_ids"] = []

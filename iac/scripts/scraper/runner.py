@@ -52,5 +52,21 @@ EVENT_MCB_MU = {
     },
 }
 
+EVENT_ABSA_MU = {
+    "dry_run": True,
+    "filters": {
+        "wrapper": "section.css-8j5iuw",
+        "openings": "li.css-1q2dra3",
+        "name": "li.css-1q2dra3 div.css-qiqmbt div.css-b3pn3b h3 a.css-19uc56f",
+        "posted_date": "li.css-1q2dra3 div.css-zoser8 div.css-1y87fhn div.css-k008qs dd.css-129m7dg",
+        "closing_date": "na",
+        "recruiter": "ABSA",
+        "salary_range": "na",
+        "location": "na",
+        "link": "li.css-1q2dra3 div.css-qiqmbt div.css-b3pn3b h3 a.css-19uc56f",
+        "pagination_button": "na",
+    },
+}
+
 if __name__ == "__main__":
-    main(EVENT_MCB_MU, CONTEXT)
+    main(EVENT_ABSA_MU, CONTEXT)

@@ -12,7 +12,7 @@ def main_injection(func):
         di["SECRETS_DATABASE_ACCESS_TOKEN"] = os.environ[
             "SECRETS_DATABASE_ACCESS_TOKEN"
         ]
-        di["DB_HOST"] = os.environ["DB_HOST"]
+        di["MONGO_API_BASE_URL"] = os.environ["MONGO_API_BASE_URL"]
 
         # * Secrets manager Doppler for database access
         doppler_database_access = DopplerSDK()
@@ -24,11 +24,9 @@ def main_injection(func):
         ).secrets
 
         # * Database variables
-        di["db_host"] = di["DB_HOST"]
-        di["db_username"] = database_secrets["MONGO_MAIN_MBT_USERNAME"]["raw"]
-        di["db_password"] = database_secrets["MONGO_MAIN_MBT_PASSWORD"]["raw"]
-        di["db_ca_file"] = "/Users/mervin.hemaraju/Temp/ca.pem"
-        di["db_cert_file"] = "/Users/mervin.hemaraju/Temp/mongod.pem"
+        di["api_base_url"] = di["MONGO_API_BASE_URL"]
+        di["api_username"] = database_secrets["MONGO_MAIN_MBT_USERNAME"]["raw"]
+        di["api_password"] = database_secrets["MONGO_MAIN_MBT_PASSWORD"]["raw"]
 
         return func(*args, **kwargs)
 
