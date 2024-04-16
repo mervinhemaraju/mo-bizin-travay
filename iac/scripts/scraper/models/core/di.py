@@ -31,7 +31,6 @@ def main_injection(func):
         di["SLACK_CHANNEL"] = os.environ["SLACK_CHANNEL"]
         di["SOURCE"] = os.environ["SOURCE"]
         di["SOURCE_URL"] = os.environ["SOURCE_URL"]
-        di["STARTUP_URL"] = os.environ["STARTUP_URL"]
         di["DOMAIN"] = os.environ["DOMAIN"]
 
         # * Boto3 variables

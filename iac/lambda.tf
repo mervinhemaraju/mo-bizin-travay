@@ -37,7 +37,6 @@ module "openings_scraping" {
     SLACK_CHANNEL                 = var.slack_channel
     SOURCE                        = each.key
     SOURCE_URL                    = each.value.source_url
-    STARTUP_URL                   = each.value.startup_url
     DOMAIN                        = each.value.domain
   }
 
