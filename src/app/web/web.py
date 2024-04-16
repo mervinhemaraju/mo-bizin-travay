@@ -13,6 +13,26 @@ def home_view():
     return HTML("index.html")
 
 
+@web.route("/aboutus")
+def about_us():
+    return HTML("aboutus.html")
+
+
+@web.route("/faq")
+def faq():
+    return HTML("faq.html")
+
+
+@web.route("/contactus")
+def contact_us():
+    return HTML("contactus.html")
+
+
+@web.route("/recruiters")
+def recruiters():
+    return HTML("recruiters.html")
+
+
 @web.route("/search")
 def search():
     # Get the query

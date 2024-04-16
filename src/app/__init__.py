@@ -7,11 +7,11 @@ app = Mbt()
 
 # * Register Blueprints
 # > Web App Blueprints
-app.register_blueprint(web, url_prefix="/home")
+app.register_blueprint(web, url_prefix="/web")
 
 
 # * Redirect to the correct web page by default
 @app.route("/")
-@app.route("/home")
+@app.route("/web")
 def page_web():
     return redirect(url_for("web.home_view"))
