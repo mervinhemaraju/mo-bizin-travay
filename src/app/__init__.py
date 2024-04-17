@@ -1,9 +1,11 @@
 from flask import redirect, url_for
+from kink import di
 from app.web.models.core.mbt import Mbt
 from app.web.web import web
 
 # * Create a Flask Application
 app = Mbt()
+app.config["SECRET_KEY"] = di["APP_SECRET_KEY"]
 
 # * Register Blueprints
 # > Web App Blueprints

@@ -98,6 +98,14 @@
     background-color: var(--color-icon-primary);
 }
 
+.mbt-form-input {
+    margin-bottom: 12px;
+}
+
+.mbt-form-input .input-group-text {
+    background-color: var(--color-accent-fade);
+}
+
 .card-footer,
 .card-body {
     background-color: var(--color-onbackground-primary);

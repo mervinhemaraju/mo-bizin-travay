@@ -1,7 +1,9 @@
 import os
-from flask import Blueprint, render_template as HTML, request
-from app.web.models.services.mongoapi import MongoAPI
 from kink import di
+from flask import Blueprint, flash, redirect, url_for, render_template as HTML, request
+from app.web.models.services.mongoapi import MongoAPI
+from app.web.models.core.functions import post_to_slack
+from app.web.models.utils.slack_blocks import block_message
 
 # * Create the web blueprint
 web = Blueprint("web", __name__, static_folder="static", template_folder="templates")
@@ -11,11 +13,6 @@ web = Blueprint("web", __name__, static_folder="static", template_folder="templa
 @web.route("/")
 def home_view():
     return HTML("index.html")
-
-
-@web.route("/aboutus")
-def about_us():
-    return HTML("aboutus.html")
 
 
 @web.route("/faq")
@@ -76,3 +73,28 @@ def search():
         total_documents=total_documents,
         accumulated_jobs=accumulated_jobs,
     )
+
+
+@web.route("/contact_submit", methods=["POST"])
+def contact_us_submit():
+    # Get the form data
+    name = request.form.get("name")
+    email = request.form.get("email")
+    subject = request.form.get("subject")
+    message = request.form.get("message")
+
+    # Post the message to slack
+    post_to_slack(
+        blocks=block_message(
+            sender_name=name,
+            sender_email=email,
+            sender_subject=subject,
+            message=message,
+        )
+    )
+
+    # Send a flash message
+    flash("Your message has been sent successfully!", "success")
+
+    # Redirect back to the contact us form
+    return redirect(url_for("web.contact_us"))
