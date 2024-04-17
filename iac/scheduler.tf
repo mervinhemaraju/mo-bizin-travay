@@ -23,12 +23,6 @@ resource "aws_scheduler_schedule" "lambda_scheduler" {
     retry_policy {
       maximum_retry_attempts = 0
     }
-
-    input = jsonencode(
-      {
-        filters = each.value.filters
-      }
-    )
   }
 
   depends_on = [module.openings_scraping, aws_scheduler_schedule_group.lambda_trigger]

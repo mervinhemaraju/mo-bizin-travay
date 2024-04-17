@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--  Other meta tags -->
+    {% block meta %}
+
+    {% endblock %}
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link href="{{ url_for('web.static', filename='img/logo.webp') }}"
+        rel="icon">
+    <link href="{{ url_for('web.static', filename='img/logo.webp') }}"
+        rel="apple-touch-icon">
+
+    <!-- Template Main CSS File -->
+    <link href="{{ url_for('web.static', filename='css/main.css') }}"
+        rel="stylesheet">
+
+    <title>
+        {% block title %}
+
+        {% endblock %}
+    </title>
+
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- Include the spinners -->
+    {% include 'spinners.html' %}
+
+    <!--  Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light accent">
+        <div class="container-fluid">
+            <a class="navbar-brand mx-5" href="{{ url_for('web.home_view') }}">
+                <h5 class="mbt-text-chewy">
+                    Mo Bizin Travay
+                </h5>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" aria-current="page"
+                            href="{{ url_for('web.recruiters') }}">Recruiters</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page"
+                            href="{{ url_for('web.faq') }}">FAQs</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page"
+                            href="{{ url_for('web.contact_us') }}">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dynamic block content -->
+    {% block body %}
+
+    {% endblock %}
+
+
+    <!--  Footer -->
+    <footer class="accent mt-auto p-5">
+        <h6 class="text-center">
+            Copyright @ Mo Bizin Travay
+        </h6>
+    </footer>
+
+    <!-- JS Files -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script>
+        function loadSpinners() {
+            document.getElementById('spinners').style.display = 'block'; // display the spinner
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,104 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Contact Us
+{% endblock %}
+
+{% block meta %}
+<meta content="mo bizin travay" name="description">
+<meta content="mo bizin travay" name="keywords">
+{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+
+    <div class="row">
+
+        <div class="col-md-6 mx-auto">
+            <div class="mbt-text-chewy">
+                <h1 style="font-size: 60px;">
+                    Let's Talk
+                </h1>
+            </div>
+
+            <div class="mt-4 mb-5">
+
+                <h6>
+                    Have questions, feedback, or need assistance? We're here to help! Please feel free to reach out to
+                    us
+                    using the contact form below.
+                </h6>
+
+                <h6>
+                    Whether you have inquiries about job listings, suggestions for improving
+                    our platform, or encounter any issues while using Mo Bizin Travay, our dedicated support team is
+                    ready
+                    to assist you. Your input is essential in enhancing the Mo Bizin Travay experience for all users.
+                </h6>
+            </div>
+
+            <div class="position-relative mb-5">
+
+                {% with messages=get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category,message in messages %}
+                {% if category == 'success' %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('web.contact_us_submit') }}" id="contactusform" method="POST"
+                    role="form" onsubmit="loadSpinners()">
+
+
+                    <div class="col-12 mbt-form-input">
+                        <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input type="text" class="form-control" id="name" name="name" value="" required>
+                        </div>
+                    </div>
+                    <div class="col-12 mbt-form-input">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <input type="email" class="form-control" id="email" name="email" value="" required>
+                        </div>
+                    </div>
+                    <div class="col-12 mbt-form-input">
+                        <label for="subject" class="form-label">Subject</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-chat"></i>
+                            </span>
+                            <input type="text" class="form-control" id="subject" name="subject" value="">
+                        </div>
+                    </div>
+                    <div class="col-12 mbt-form-input">
+                        <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
+                    </div>
+                    <div class="col-12 mt-5">
+                        <div class="d-grid">
+                            <button class="btn btn-lg mbt-button-primary rounded-pill" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'master.html' %}
+
+{% block title %}
+Mo Bizin Travay
+{% endblock %}
+
+{% block meta %}
+<meta content="mo bizin travay" name="description">
+<meta content="mo bizin travay" name="keywords">
+{% endblock %}
+
+{% block body %}
+
+
+
+<div class="container mt-5 mb-5">
+
+    <div class="row mb-5">
+        <div class="col-md-6 mx-auto text-center">
+            <div class="position-relative mb-3">
+
+                <form action="{{ url_for('web.search') }}" id="searchForm" method="GET" role="form"
+                    onsubmit="loadSpinners()">
+                    <input type="text"
+                        class="form-control form-control-lg rounded-pill px-4 mybox mbt-textboxes-primary"
+                        aria-label="Search" name="query" id="query" value="{{ query }}">
+                    <i class="bi bi-search mbt-icons position-absolute"
+                        style="top: 50%; left: 15px; transform: translateY(-50%);"></i>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if data|length != 0 %}
+
+    <div class="row mb-2">
+        <div class="col-md-6 mx-auto">
+            <h6 class="left-align">
+                Showing {{ accumulated_jobs }} of {{ total_documents }}
+            </h6>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6 mx-auto text-center">
+
+            {% for item in data %}
+
+            <!-- Opening card -->
+            <div class="card mb-5 rounded shadow-sm">
+
+                <!-- Card body -->
+                <div class="card-body p-4">
+
+                    <!--  Card title -->
+                    <h3 class="card-title">{{ item["title"] }}</h3>
+
+                    <!-- Card Sub text -->
+                    <div class="d-flex justify-content-center mt-3 mb-3" style="font-size:medium;">
+                        <p class="card-text text-muted">Posted on
+                            {{ item["posted_date"] }}
+                        </p>
+                    </div>
+
+                    {% if item["closing_date"] is not none %}
+                    <!-- Card Sub text -->
+                    <div class="d-flex justify-content-center" style="font-size:small;">
+                        <p class="card-text text-muted">Closing on
+                            <b>{{ item["closing_date"] }}</b>
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <!--  Optional card views -->
+                    <div class="d-flex justify-content-center mt-5 mb-4">
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-currency-dollar"></i>
+                            </span>
+                            {{ item["salary_range"] }}
+                        </button>
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-pin-map"></i>
+                            </span>
+                            {{ item["location"] }}
+                        </button>
+                        <button type="button" class="btn btn-sm rounded-pill btn-primary mbt-pills me-2">
+                            <span class="badge">
+                                <i class="bi bi-briefcase"></i>
+                            </span>
+                            {{ item["recruiter"] }}
+                        </button>
+                    </div>
+
+                    <!-- Card apply button -->
+                    <a href="{{ item['link'] }}" target="_blank"
+                        class="btn mbt-button-primary rounded-pill">Apply Job</a>
+                </div>
+
+                <!-- Card footer -->
+                <div class="card-footer text-muted">
+                    Posted by <b>{{ item["opening_source"] | upper }}</b>
+                </div>
+            </div>
+            {% endfor %}
+
+            <a href="{{ url_for('web.search', query=query, page=page-1) }}"
+                class="mbt-icon-button rounded-pill mx-2 {{ 'pe-none' if page < 2 }}"
+                onclick="loadSpinners()">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+
+            <a href="{{ url_for('web.search', query=query, page=page+1) }}"
+                class="mbt-icon-button rounded-pill mx-2 {{ 'pe-none' if page >= total_pages }}"
+                onclick="loadSpinners()">
+                <i class=" bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="row">
+        <div class="col-md-6 mx-auto text-center">
+            <img width="480"
+                src="{{ url_for('web.static', filename='svg/not-found.svg') }}"
+                alt="No data found">
+            <p>No jobs found for "{{ query }}"</p>
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
