@@ -7,7 +7,7 @@ locals {
       source_url = "https://www.jobs.mu/jobs"
     },
     {
-      status     = "DISABLED"
+      status     = "ENABLED"
       source     = "myjobmu",
       domain     = "https://www.myjob.mu",
       source_url = "https://www.myjob.mu"
