@@ -38,7 +38,6 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-
     <!-- Include the spinners -->
     {% include 'spinners.html' %}
 
@@ -56,12 +55,18 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" aria-current="page"
-                            href="{{ url_for('web.recruiters') }}">Recruiters</a></li>
-                    <li class="nav-item"><a class="nav-link" aria-current="page"
-                            href="{{ url_for('web.faq') }}">FAQs</a></li>
-                    <li class="nav-item"><a class="nav-link" aria-current="page"
-                            href="{{ url_for('web.contact_us') }}">Contact Us</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if self.title().lower().strip() == 'recruiters' %}active{% endif %}"
+                            aria-current="page" href="{{ url_for('web.recruiters') }}">Recruiters</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if self.title().lower().strip() == 'faqs' %}active{% endif %}"
+                            aria-current="page" href="{{ url_for('web.faq') }}">FAQs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if self.title().lower().strip() == 'contact us' %}active{% endif %}"
+                            aria-current="page" href="{{ url_for('web.contact_us') }}">Contact Us</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -74,10 +79,16 @@
 
 
     <!--  Footer -->
-    <footer class="accent mt-auto p-5">
-        <h6 class="text-center">
-            Copyright @ Mo Bizin Travay
-        </h6>
+    <footer class="accent mt-auto pb-1 pt-2 d-flex justify-content-between mbt-footer">
+        <p class="text-start ps-5">
+            &copy; {{ year }} Mo Bizin Travay. All rights reserved.
+        </p>
+        <p class="text-end pe-5">
+            Designed by
+            <a href="https://mervinhemaraju.com" target="_blank">
+                Mervin Hemaraju
+            </a>
+        </p>
     </footer>
 
     <!-- JS Files -->
@@ -87,10 +98,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-    <script>
-        function loadSpinners() {
-            document.getElementById('spinners').style.display = 'block'; // display the spinner
-        }
+    <!-- Link to main.js -->
+    <script src="{{ url_for('web.static', filename='js/main.js') }}">
     </script>
 </body>
 

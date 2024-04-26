@@ -1,6 +1,7 @@
 import os
 from kink import di
-from flask import Blueprint, flash, redirect, url_for, render_template as HTML, request
+from flask import Blueprint, flash, redirect, url_for, request
+from app.web.models.core.mbt import render_template as HTML
 from app.web.models.services.mongoapi import MongoAPI
 from app.web.models.core.functions import post_to_slack
 from app.web.models.utils.slack_blocks import block_message
