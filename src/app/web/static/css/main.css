@@ -37,6 +37,8 @@
     background-color: var(--color-accent-fade);
     border: var(--color-accent-fade);
     color: var(--color-titles-primary);
+    pointer-events: none;
+    cursor: default;
 }
 
 .mbt-pills span {
@@ -104,6 +106,10 @@
 
 .mbt-form-input .input-group-text {
     background-color: var(--color-accent-fade);
+}
+
+.mbt-card-simple {
+    border-color: var(--color-titles-primary);
 }
 
 .card-footer,

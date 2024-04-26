@@ -49,9 +49,11 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
         # Create an opening document
         document = {
             "title": title,
-            "posted_date": posted_date.strftime("%Y-%m-%d") if posted_date else None,
+            "posted_date": posted_date.strftime("%Y-%m-%d")
+            if posted_date
+            else datetime.now().strftime("%Y-%m-%d"),
             "closing_date": closing_date.strftime("%Y-%m-%d") if closing_date else None,
-            "recruiter": recruiter if recruiter else "ABSA",
+            "recruiter": recruiter if recruiter else "EMTEL",
             "location": location if location else "Not Specified.",
             "salary_range": salary_range if salary_range else "Not disclosed.",
             "updated_at": datetime.now().strftime("%Y-%m-%d"),

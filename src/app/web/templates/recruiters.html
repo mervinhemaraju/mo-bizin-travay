@@ -29,11 +29,20 @@ Recruiters
 
                 <h6>The following recruiters have been onboarded on Mo Bizin Travay.</h6>
 
-                <div class="recruiters-list mt-5">
-                    <h4>MCB</h4>
-                    <h4>ABSA</h4>
-                    <h4>JOBS.MU</h4>
-                    <h4>MYJOB.MU</h4>
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto text-center">
+
+                            {% for source in sources %}
+                            <div class="card mbt-card-simple mb-3">
+                                <div class="p-3 rounded">
+                                    <h4 class="card-title">{{ source }}</h4>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -56,7 +56,7 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
                 "title": title,
                 "posted_date": posted_date.strftime("%Y-%m-%d")
                 if posted_date
-                else None,
+                else datetime.now().strftime("%Y-%m-%d"),
                 "closing_date": closing_date.strftime("%Y-%m-%d")
                 if closing_date
                 else None,

@@ -27,7 +27,23 @@ def contact_us():
 
 @web.route("/recruiters")
 def recruiters():
-    return HTML("recruiters.html")
+    # Create the api object
+    api = MongoAPI()
+
+    # Get the sources
+    sources = api.get_sources()
+
+    # Reformat the sources
+    sources = [
+        # if source ends with mu, add a dot before mu
+        source.replace("mu", ".mu").upper()
+        if source.lower().endswith("mu")
+        else source.upper()
+        for source in sources
+    ]
+
+    # Return the page with the sources
+    return HTML("recruiters.html", sources=sources)
 
 
 @web.route("/search")
@@ -35,34 +51,32 @@ def search():
     # Get the query
     query = request.args.get("query", "")
 
+    # Get the sort
+    sort = request.args.get("sort", None)
+    sorting = []
+
     # Get current page from query parameters, default to 1
     page = int(request.args.get("page", 1))
 
     # Create the api object
     api = MongoAPI()
 
+    # Define the sorting
+    if sort is not None:
+        # match case
+        match sort:
+            case "title":
+                sorting.append([sort, 1])
+
+            case "posted_date":
+                sorting.append([sort, -1])
+
     # Get data for the current page
-    data, total_pages, total_documents = api.get_paginated_data(page=page, query=query)
+    data, total_pages, total_documents, per_page = api.get_paginated_data(
+        page=page, query=query, sorting=sorting
+    )
 
-    # data, total_pages, total_documents = (
-    #     [
-    #         # {
-    #         #     "title": "Operational Risk Analyst | Risk SBU | April 2024",
-    #         #     "posted_date": "2024-04-05",
-    #         #     "closing_date": "N/A",
-    #         #     "recruiter": "N/A",
-    #         #     "location": "N/A",
-    #         #     "salary_range": "N/A",
-    #         #     "updated_at": "2024-04-11",
-    #         #     "opening_source": "mcbmu",
-    #         #     "link": "https://ekbd.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX/job/1337",
-    #         # }
-    #     ],
-    #     0,
-    #     0,
-    # )
-
-    accumulated_jobs = min(page * 10, total_documents)
+    accumulated_jobs = min(page * per_page, total_documents)
 
     return HTML(
         "search.html",
