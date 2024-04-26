@@ -11,7 +11,7 @@ class MongoAPI:
         self.headers = {"Content-Type": "application/json"}
         self.auth = HTTPBasicAuth(api_username, api_password)
 
-    def get_paginated_data(self, query, page=1):
+    def get_paginated_data(self, query, page=1, sorting=[]):
         # Create the query
         regex = {"$regex": query, "$options": "i"}  # case-insensitive
         query_filter = {"$or": [{"title": regex}, {"opening_source": regex}]}
@@ -23,6 +23,7 @@ class MongoAPI:
             data=json.dumps(
                 {
                     "query": query_filter,
+                    "sort": sorting,
                     "page": page,
                 }
             ),
@@ -30,4 +31,21 @@ class MongoAPI:
         ).json()
 
         # Return the details
-        return response["data"], response["total_pages"], response["total_documents"]
+        return (
+            response["data"],
+            response["total_pages"],
+            response["total_documents"],
+            response["per_page"],
+        )
+
+    def get_sources(self):
+        # Get the data
+        response = requests.get(
+            url=f"{self.base_url}/distinct",
+            headers=self.headers,
+            data=json.dumps({"field": "opening_source"}),
+            auth=self.auth,
+        ).json()
+
+        # Return the details
+        return response["data"]

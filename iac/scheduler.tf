@@ -9,7 +9,7 @@ resource "aws_scheduler_schedule" "lambda_scheduler" {
   name                = "schedule-${local.lambda.prefix_name}-${lower(each.key)}"
   description         = "The schedule for ${local.lambda.prefix_name}-${lower(each.key)}"
   group_name          = aws_scheduler_schedule_group.lambda_trigger.name
-  schedule_expression = "rate(4 days)"
+  schedule_expression = "cron(0 16 ? * SUN,WED *)"
   state               = each.value.status
 
   flexible_time_window {

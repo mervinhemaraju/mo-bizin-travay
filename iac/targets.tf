@@ -7,10 +7,10 @@ locals {
       source_url = "https://www.jobs.mu/jobs"
     },
     {
-      status     = "DISABLED"
+      status     = "ENABLED"
       source     = "myjobmu",
       domain     = "https://www.myjob.mu",
-      source_url = "https://www.myjob.mu"
+      source_url = "https://www.myjob.mu/ShowResults.aspx"
     },
     {
       status     = "ENABLED"
@@ -23,6 +23,12 @@ locals {
       source     = "absamu",
       domain     = "https://absa.wd3.myworkdayjobs.com",
       source_url = "https://absa.wd3.myworkdayjobs.com/ABSAcareersite?locationCountry=a759018ba6ac489d9f16c086b914e1b6",
+    },
+    {
+      status     = "ENABLED"
+      source     = "emtel",
+      domain     = "https://www.emtel.com",
+      source_url = "https://www.emtel.com/about-us/careers",
     }
   ]
 }

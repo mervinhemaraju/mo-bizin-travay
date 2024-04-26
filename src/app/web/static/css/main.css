@@ -13,6 +13,16 @@
 }
 
 /* Reuseables */
+.mbt-footer p {
+    color: var(--color-accent-primary);
+    font-size: small;
+}
+
+.mbt-footer a {
+    color: var(--color-titles-primary);
+    text-decoration: none;
+}
+
 .mbt-faq-title {
     background-color: var(--color-accent-primary);
     color: var(--color-onsurface-primary);
@@ -37,6 +47,8 @@
     background-color: var(--color-accent-fade);
     border: var(--color-accent-fade);
     color: var(--color-titles-primary);
+    pointer-events: none;
+    cursor: default;
 }
 
 .mbt-pills span {
@@ -77,6 +89,7 @@
     background-color: var(--color-accent-primary);
     color: var(--color-onsurface-primary);
     padding: 12px;
+    text-decoration: none;
 }
 
 
@@ -104,6 +117,10 @@
 
 .mbt-form-input .input-group-text {
     background-color: var(--color-accent-fade);
+}
+
+.mbt-card-simple {
+    border-color: var(--color-titles-primary);
 }
 
 .card-footer,

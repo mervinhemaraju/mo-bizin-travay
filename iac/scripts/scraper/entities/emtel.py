@@ -32,7 +32,7 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
         recruiter = retrieve_tag_text(soup, filters["recruiter"])
         salary_range = retrieve_tag_text(soup, filters["salary_range"])
         location = retrieve_tag_text(soup, filters["location"])
-        link = retrieve_tag_href(soup, filters["link"])
+        link = di["SOURCE_URL"]
 
         # If closing date is obtained and
         # closing date is before today,
@@ -46,30 +46,23 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
             # Skip to next
             continue
 
-        # Verify if link is already present
-        if link not in di["opening_ids"]:
-            # Append the opening id to the list
-            di["opening_ids"].append(link)
+        # Create an opening document
+        document = {
+            "title": title,
+            "posted_date": posted_date.strftime("%Y-%m-%d")
+            if posted_date
+            else datetime.now().strftime("%Y-%m-%d"),
+            "closing_date": closing_date.strftime("%Y-%m-%d") if closing_date else None,
+            "recruiter": recruiter if recruiter else "EMTEL",
+            "location": location if location else "Not Specified.",
+            "salary_range": salary_range if salary_range else "Not disclosed.",
+            "updated_at": datetime.now().strftime("%Y-%m-%d"),
+            "opening_source": di["SOURCE"],
+            "link": link,
+        }
 
-            # Create an opening document
-            document = {
-                "title": title,
-                "posted_date": posted_date.strftime("%Y-%m-%d")
-                if posted_date
-                else datetime.now().strftime("%Y-%m-%d"),
-                "closing_date": closing_date.strftime("%Y-%m-%d")
-                if closing_date
-                else None,
-                "recruiter": recruiter if recruiter else "MYJOBMU",
-                "location": location if location else "Not Specified.",
-                "salary_range": salary_range if salary_range else "Not disclosed.",
-                "updated_at": datetime.now().strftime("%Y-%m-%d"),
-                "opening_source": di["SOURCE"],
-                "link": link,
-            }
-
-            # Append to openings list
-            openings.append(document)
+        # Append to openings list
+        openings.append(document)
 
     # Return the soup for the main container
     return BeautifulSoup(container.get_attribute("outerHTML"), "html.parser"), openings
@@ -78,16 +71,16 @@ def main_scraping_process(web_driver: WebDriver, filters: dict):
 def scrape(delay, dry_run):
     # ! Define the filters
     filters = {
-        "wrapper": "div#page",
-        "openings": "div.module.job-result",
-        "name": "div.module-content div.job-result-logo-title div.job-result-title h2 a",
-        "posted_date": "div.module-content div.job-result-overview ul.job-overview li.updated-time",
-        "closing_date": "div.module-content div.job-result-overview ul.job-overview li.closed-time",
-        "recruiter": "div.module-content div.job-result-logo-title div.job-result-title h3 a",
-        "salary_range": "div.module-content div.job-result-overview ul.job-overview li.salary",
-        "location": "div.module-content div.job-result-overview ul.job-overview li.location",
-        "link": "div.module-content div.job-result-logo-title div.job-result-title h2 a",
-        "pagination_button": "ul#pagination li:last-child a",
+        "wrapper": "div.career-content",
+        "openings": "div.switcher-section ul.uk-switcher li.uk-active div.block-views.clearfix div.uk-grid-collapse.uk-grid",
+        "name": "div.job-desc",
+        "posted_date": "na",
+        "closing_date": "div:nth-child(2) p",
+        "recruiter": "EMTEL",
+        "salary_range": "na",
+        "location": "na",
+        "link": "na",
+        "pagination_button": "na",
     }
 
     # Create the web driver
@@ -111,6 +104,7 @@ def scrape(delay, dry_run):
 
     # Verify if there is pagination
     while next_button_url is not None:
+        print("Going for second level of scraping")
         # If partial url, add prefix
         if di["DOMAIN"] not in next_button_url:
             next_button_url = f"{di['SOURCE_URL']}{next_button_url}"
